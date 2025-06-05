@@ -1,0 +1,124 @@
+@import '@/styles/variables';
+
+.solution {
+  padding: $spacing-3xl 0;
+  background-color: $color-background;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.title {
+  font-family: $font-heading;
+  font-size: $font-size-4xl;
+  color: $color-text;
+  margin-bottom: $spacing-2xl;
+  max-width: 800px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-xl;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.featureBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-xl;
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  transition: all $transition-normal;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+    border-color: $color-primary;
+    
+    .iconWrapper {
+      background-color: rgba($color-primary, 0.1);
+      color: $color-primary;
+    }
+  }
+}
+
+.iconWrapper {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba($color-primary, 0.05);
+  border-radius: $radius-full;
+  margin-bottom: $spacing-lg;
+  transition: all $transition-normal;
+  color: $color-primary-dark;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+}
+
+.featureTitle {
+  font-family: $font-heading;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+  margin-bottom: $spacing-md;
+}
+
+.featureText {
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+/* Responsive styles */
+@media (max-width: $breakpoint-lg) {
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .solution {
+    padding: $spacing-2xl 0;
+  }
+
+  .title {
+    font-size: $font-size-3xl;
+    margin-bottom: $spacing-xl;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+
+  .featureBlock {
+    padding: $spacing-lg;
+  }
+
+  .iconWrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .featureTitle {
+    font-size: $font-size-lg;
+  }
+} 

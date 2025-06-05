@@ -1,0 +1,141 @@
+.about {
+  padding: var(--spacing-xl) 0;
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+  }
+}
+
+.intro {
+  font-size: 1.25rem;
+  color: var(--secondary-color);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  line-height: 1.6;
+}
+
+.section {
+  margin-bottom: var(--spacing-xl);
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-color);
+  }
+
+  p {
+    color: var(--secondary-color);
+    line-height: 1.6;
+  }
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.step {
+  padding: var(--spacing-lg);
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary-color);
+  }
+
+  p {
+    color: var(--secondary-color);
+    line-height: 1.6;
+  }
+}
+
+.useCases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.useCase {
+  padding: var(--spacing-lg);
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-color);
+  }
+
+  p {
+    color: var(--secondary-color);
+    line-height: 1.6;
+  }
+}
+
+.contactButton {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  margin-top: var(--spacing-md);
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background-color: var(--accent-color);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .content {
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .intro {
+    font-size: 1.1rem;
+  }
+
+  .section {
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .steps,
+  .useCases {
+    grid-template-columns: 1fr;
+  }
+} 

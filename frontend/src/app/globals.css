@@ -1,0 +1,130 @@
+/* Reset and base styles */
+:root {
+  /* Primary Colors */
+  --primary-color: #00695C; /* Deep Teal - main brand color */
+  --primary-dark: #004D40; /* Darker Teal - for hover states */
+  --accent-color: #D4A017; /* Muted Gold - for accents and CTAs */
+  --accent-dark: #B8860B; /* Darker Gold - for hover states */
+  
+  /* Background Colors */
+  --background-color: #F8F9FA; /* Off-white background */
+  --background-alt: #ECEFF1; /* Light Cool Gray - alternative background */
+  
+  /* Text Colors */
+  --text-color: #212529; /* Dark Charcoal - primary text */
+  --text-secondary: #343A40; /* Alternative Dark - secondary text */
+  --text-light: #F8F9FA; /* Light text for dark backgrounds */
+  
+  /* UI Elements */
+  --border-color: #CED4DA; /* Light Gray - borders and dividers */
+  --shadow-color: rgba(33, 37, 41, 0.1); /* Based on text color */
+  
+  /* Sentiment Analysis Colors */
+  --sentiment-very-negative: #B71C1C; /* Deep Red */
+  --sentiment-negative: #F8BBD0; /* Light Pink/Rose */
+  --sentiment-neutral: #CFD8DC; /* Light Blue-Gray */
+  --sentiment-positive: #B2DFDB; /* Light Teal */
+  --sentiment-very-positive: #00695C; /* Deep Teal */
+  
+  /* Interactive States */
+  --hover-overlay: rgba(0, 105, 92, 0.05); /* Primary color with opacity */
+  --active-overlay: rgba(0, 105, 92, 0.1); /* Primary color with opacity */
+  
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Utility classes */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
