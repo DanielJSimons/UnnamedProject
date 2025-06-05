@@ -74,3 +74,60 @@
     margin-right: $spacing-xs;
   }
 }
+
+.queryControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+
+  input {
+    padding: $spacing-xs $spacing-sm;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    font: inherit;
+  }
+
+  button {
+    background: $color-primary;
+    color: $color-text-light;
+    border: none;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-sm;
+    cursor: pointer;
+  }
+}
+
+.queryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+
+  .queryItem {
+    display: flex;
+    align-items: center;
+    padding: 2px $spacing-xs;
+    border-radius: $radius-sm;
+    color: $color-text-light;
+
+    button {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      margin-left: $spacing-xs;
+    }
+  }
+}
+
+.toggleControls {
+  margin-bottom: $spacing-xl;
+
+  label {
+    margin-right: $spacing-md;
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+}
