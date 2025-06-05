@@ -1,260 +1,276 @@
 "use client";
 
-import React, { useState } from 'react';
-import SplitText from '@/components/ReactBits/SplitText';
-import BlurText from '@/components/ReactBits/BlurText';
+import React, { useState, useMemo } from 'react';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  BarChart,
-  Bar,
-  ResponsiveContainer,
-  ScatterChart,
-  Scatter,
-  ZAxis,
-} from 'recharts';
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+
 import styles from './page.module.scss';
+import { useAuth } from '@/context/AuthContext';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label, Brush, ReferenceArea } from 'recharts';
+import { FaSyncAlt } from 'react-icons/fa';
+import { generateLineChartData } from '@/lib/mockData';
+import { SentimentDistributionPanel } from '@/components/Dashboard/SentimentDistributionPanel';
+import { VadAnalysisPanel } from '@/components/Dashboard/VadAnalysisPanel';
+import { ContextualSnippetsPanel } from '@/components/Dashboard/ContextualSnippetsPanel';
+import { WordCloudPanel } from '@/components/Dashboard/WordCloudPanel';
+import { NetworkGraphPanel } from '@/components/Dashboard/NetworkGraphPanel';
+import { HeatmapPanel } from '@/components/Dashboard/HeatmapPanel';
+import { SortablePanel } from '@/components/Dashboard/SortablePanel';
+import { EntityManagementModal } from '@/components/Dashboard/EntityManagementModal';
+import { DateRangePicker } from '@/components/Inputs/DateRangePicker';
+import { DateRange } from 'react-day-picker';
+import { addDays } from 'date-fns';
 
-const months = Array.from({ length: 12 }, (_, i) =>
-  `2024-${(i + 1).toString().padStart(2, '0')}-01`
-);
+type PanelType = {
+  id: string;
+  title: string;
+  component: React.FC<any>;
+  gridProps?: { [key: string]: any };
+};
 
-interface QueryPoint {
-  date: string;
-  value: number;
-}
-
-interface Query {
-  id: number;
-  term: string;
-  color: string;
-  data: QueryPoint[];
-}
-
-const generateQueryData = (): QueryPoint[] =>
-  months.map((date) => ({ date, value: parseFloat((Math.random() * 2 - 1).toFixed(2)) }));
-
-const queryColors = [
-  '#00695C',
-  '#B8860B',
-  '#B71C1C',
-  '#512DA8',
-  '#F8BBD0',
-  '#B2DFDB',
-];
-
-// Static mock data for optional panels
-
-
-const mockTopEntities = [
-  { name: 'OpenAI', count: 120 },
-  { name: 'Elon Musk', count: 110 },
-  { name: 'Apple', count: 90 },
-  { name: 'Microsoft', count: 80 },
-];
-
-const mockComparison = [
-  { channel: 'News A', sentiment: 0.5, mentions: 80 },
-  { channel: 'News B', sentiment: -0.2, mentions: 60 },
-  { channel: 'News C', sentiment: 0.1, mentions: 70 },
-];
-
-const mockVAD = [
-  { emotion: 'Valence', value: 0.7 },
-  { emotion: 'Arousal', value: 0.4 },
-  { emotion: 'Dominance', value: 0.6 },
-];
-
-const mockSnippets = Array.from({ length: 3 }, (_, i) => ({
-  id: i+1,
-  timestamp: i*45,
-  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-  video: `Video ${i+1}`,
-}));
-
-export default function DashboardPage() {
-  const [queries, setQueries] = useState<Query[]>([]);
-  const [nextId, setNextId] = useState(1);
-  const [inputTerm, setInputTerm] = useState('');
-  const [showTopEntities, setShowTopEntities] = useState(true);
-  const [showComparison, setShowComparison] = useState(true);
-  const [showVAD, setShowVAD] = useState(true);
-
-  const addQuery = () => {
-    if (!inputTerm.trim()) return;
-    setQueries((qs) => [
-      ...qs,
-      {
-        id: nextId,
-        term: inputTerm.trim(),
-        color: queryColors[(nextId - 1) % queryColors.length],
-        data: generateQueryData(),
-      },
-    ]);
-    setNextId((id) => id + 1);
-    setInputTerm('');
-  };
-
-  const removeQuery = (id: number) =>
-    setQueries((qs) => qs.filter((q) => q.id !== id));
-
-  const chartData = months.map((date, idx) => {
-    const obj: Record<string, number | string> = { date };
-    queries.forEach((q) => {
-      obj[q.term] = q.data[idx].value;
-    });
-    return obj;
+export default function Dashboard() {
+  const { user } = useAuth();
+  const [selectedEntities, setSelectedEntities] = useState<string[]>(['QuantumLeapAI', 'Helion Prime']);
+  const [secondaryMetric, setSecondaryMetric] = useState<string>('none');
+  const [newEntity, setNewEntity] = useState('');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: addDays(new Date(), -30),
+    to: new Date(),
   });
 
+  const entityColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#00C49F', '#FFBB28', '#FF8042'];
+
+  const initialPanels: PanelType[] = [
+    { id: 'sentiment', title: 'Sentiment Distribution', component: SentimentDistributionPanel },
+    { id: 'vad', title: 'VAD Emotional Snapshot', component: VadAnalysisPanel },
+    { id: 'wordcloud', title: 'Word Cloud Analysis', component: WordCloudPanel },
+    { id: 'network', title: 'Entity Network', component: NetworkGraphPanel },
+    { id: 'heatmap', title: 'Temporal Patterns', component: HeatmapPanel },
+    { id: 'snippets', title: 'Contextual Snippets', component: ContextualSnippetsPanel, gridProps: { 'data-grid': { w: 2, h: 1 } } },
+  ];
+  const [panels, setPanels] = useState(initialPanels);
+  
+  const [data, setData] = useState(() => generateLineChartData(selectedEntities.map(e => ({ entity: e, color: '#8884d8' })), secondaryMetric));
+  const [zoomState, setZoomState] = useState({
+    refAreaLeft: '',
+    refAreaRight: '',
+    isZooming: false,
+    dataWindow: { startIndex: 0, endIndex: data.length - 1 }
+  });
+
+  const fullData = useMemo(() => {
+    const newData = generateLineChartData(selectedEntities.map(e => ({ entity: e, color: '#8884d8' })), secondaryMetric);
+    setData(newData);
+    return newData;
+  }, [selectedEntities, secondaryMetric]);
+  
+  const visibleData = data.slice(zoomState.dataWindow.startIndex, zoomState.dataWindow.endIndex + 1);
+  const isZoomed = data.length !== visibleData.length;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setPanels((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over?.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  const handleAddEntity = (entity: string) => {
+    if (entity && !selectedEntities.includes(entity)) {
+      setSelectedEntities(prev => [...prev, entity]);
+    }
+  };
+
+  const handleRemoveEntity = (entityToRemove: string) => {
+    setSelectedEntities(prev => prev.filter(e => e !== entityToRemove));
+  };
+
+  const handleZoomOut = () => {
+    setZoomState(s => ({
+      ...s,
+      dataWindow: { startIndex: 0, endIndex: data.length - 1 }
+    }));
+  };
+
+  const handleMouseUp = (e: any) => {
+    if (!zoomState.isZooming) return;
+
+    let { refAreaLeft, refAreaRight } = zoomState;
+
+    if (refAreaLeft === refAreaRight || !refAreaRight) {
+      setZoomState(s => ({
+        ...s,
+        refAreaLeft: '',
+        refAreaRight: '',
+        isZooming: false
+      }));
+      return;
+    }
+
+    // Ensure left is less than right
+    if (refAreaLeft > refAreaRight) {
+      [refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft];
+    }
+
+    // Find indices
+    const startIndex = data.findIndex(item => item.date === refAreaLeft);
+    const endIndex = data.findIndex(item => item.date === refAreaRight);
+
+    setZoomState(s => ({
+      ...s,
+      refAreaLeft: '',
+      refAreaRight: '',
+      isZooming: false,
+      dataWindow: {
+        startIndex: startIndex >= 0 ? startIndex : s.dataWindow.startIndex,
+        endIndex: endIndex >= 0 ? endIndex : s.dataWindow.endIndex
+      }
+    }));
+  };
+
+  const getPanelComponent = (panel: PanelType) => {
+    // For all other panels, pass the selected entities as queries
+    const props = { 
+      queries: selectedEntities.map(e => ({ entity: e })),
+      dateRange: dateRange,
+    };
+    return <panel.component {...props} />;
+  };
+
   return (
-    <main className={styles.dashboardPage}>
+    <div className={styles.dashboard}>
       <header className={styles.header}>
-        <SplitText text="Your News Dashboard" className={styles.title} />
-        <BlurText
-          text="All your tracked entities and sentiment insights in one place."
-          className={styles.subtitle}
-        />
+        <h1>My Dashboard</h1>
+        <div className={styles.headerControls}>
+          <DateRangePicker date={dateRange} setDate={setDateRange} />
+          <EntityManagementModal
+            trackedEntities={selectedEntities}
+            onAddEntity={handleAddEntity}
+            onRemoveEntity={handleRemoveEntity}
+          />
+        </div>
       </header>
 
-      <div className={styles.queryControls}>
-        <input
-          type="text"
-          value={inputTerm}
-          onChange={(e) => setInputTerm(e.target.value)}
-          placeholder="Add term or channel"
-        />
-        <button type="button" onClick={addQuery}>Add</button>
-      </div>
-      <div className={styles.queryList}>
-        {queries.map((q) => (
-          <span
-            key={q.id}
-            className={styles.queryItem}
-            style={{ backgroundColor: q.color }}
+      <div className={styles.mainChartContainer}>
+        {isZoomed && (
+          <button onClick={handleZoomOut} className={styles.resetZoomButton}>
+            <FaSyncAlt /> Reset Zoom
+          </button>
+        )}
+        <div className={styles.chartControls}>
+          <div className={styles.metricSelector}>
+            <label htmlFor="secondary-metric">Secondary Axis:</label>
+            <select id="secondary-metric" value={secondaryMetric} onChange={e => setSecondaryMetric(e.target.value)}>
+              <option value="none">None</option>
+              <option value="exp_sent">Expressive Sentiment</option>
+              <option value="vad_v">Valence</option>
+              <option value="vad_a">Arousal</option>
+              <option value="vad_d">Dominance</option>
+            </select>
+          </div>
+        </div>
+        
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart
+            data={visibleData}
+            onMouseDown={(e: any) => e && setZoomState(s => ({ ...s, refAreaLeft: e.activeLabel, isZooming: true }))}
+            onMouseMove={(e: any) => zoomState.isZooming && e && setZoomState(s => ({ ...s, refAreaRight: e.activeLabel }))}
+            onMouseUp={handleMouseUp}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
-            {q.term}
-            <button onClick={() => removeQuery(q.id)} aria-label="Remove">
-              &times;
-            </button>
-          </span>
-        ))}
-      </div>
-
-      <section className={styles.fullRow}>
-        <h2>Term Trend Comparison</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis domain={[-1, 1]} />
-            <Tooltip />
+            <defs>
+              <linearGradient id="colorMain" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="colorSecondary" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#4a4a6a" />
+            <XAxis dataKey="date" stroke="#a0a0c0" />
+            <YAxis yAxisId="left" stroke="#a0a0c0">
+              <Label value="Mention Count" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fill: '#a0a0c0' }} />
+            </YAxis>
+            {secondaryMetric !== 'none' && (
+              <YAxis yAxisId="right" orientation="right" stroke="#82ca9d">
+                <Label value={secondaryMetric} angle={90} position="insideRight" style={{ textAnchor: 'middle', fill: '#82ca9d' }} />
+              </YAxis>
+            )}
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'rgba(20, 20, 30, 0.9)',
+                borderColor: 'rgba(100, 100, 120, 0.7)',
+                borderRadius: '12px',
+              }}
+            />
             <Legend />
-            {queries.map((q) => (
+            {selectedEntities.map((entity, index) => (
               <Line
-                key={q.id}
+                key={entity}
+                yAxisId="left"
                 type="monotone"
-                dataKey={q.term}
-                stroke={q.color}
+                dataKey={entity}
+                stroke={entityColors[index % entityColors.length]}
+                strokeWidth={2}
+                dot={false}
               />
             ))}
+            {secondaryMetric !== 'none' && selectedEntities.map((entity, index) => (
+              <Line
+                key={`${entity}_secondary`}
+                yAxisId="right"
+                type="monotone"
+                dataKey={`${entity}_${secondaryMetric}`}
+                stroke={entityColors[index % entityColors.length]}
+                strokeWidth={2}
+                dot={false}
+                strokeDasharray="5 5"
+              />
+            ))}
+            {zoomState.refAreaLeft && zoomState.refAreaRight ? (
+              <ReferenceArea yAxisId="left" x1={zoomState.refAreaLeft} x2={zoomState.refAreaRight} strokeOpacity={0.3} />
+            ) : null}
           </LineChart>
         </ResponsiveContainer>
-      </section>
-
-      <div className={styles.toggleControls}>
-        <label>
-          <input
-            type="checkbox"
-            checked={showTopEntities}
-            onChange={(e) => setShowTopEntities(e.target.checked)}
-          />
-          Top Entities
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={showComparison}
-            onChange={(e) => setShowComparison(e.target.checked)}
-          />
-          Channel Comparison
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={showVAD}
-            onChange={(e) => setShowVAD(e.target.checked)}
-          />
-          Sentiment Details
-        </label>
+        <div className={styles.xAxisLabel}>Date</div>
       </div>
 
-      {showTopEntities && (
-        <section className={styles.fullRow}>
-          <h2>Top Entities</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={mockTopEntities}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" fill="#B8860B" />
-            </BarChart>
-          </ResponsiveContainer>
-        </section>
-      )}
-
-      {showComparison && (
-        <section className={styles.fullRow}>
-          <h2>Channel Comparison</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <ScatterChart>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="mentions" name="Mentions" />
-              <YAxis dataKey="sentiment" name="Sentiment" domain={[-1, 1]} />
-              <ZAxis range={[100]} />
-              <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-              <Scatter data={mockComparison} fill="#00695C" />
-            </ScatterChart>
-          </ResponsiveContainer>
-        </section>
-      )}
-
-      {showVAD && (
-        <section className={styles.chartsRow}>
-          <div className={styles.chartCard}>
-            <h2>VAD Snapshot</h2>
-            <div className={styles.heatmap}>
-              {mockVAD.map((v) => (
-                <div
-                  key={v.emotion}
-                  className={styles.heatCell}
-                  style={{ opacity: v.value }}
-                >
-                  {v.emotion}
-                </div>
-              ))}
-            </div>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={panels.map(p => p.id)} strategy={rectSortingStrategy}>
+          <div className={styles.dashboardGrid}>
+            {panels.map((panel) => (
+              <SortablePanel key={panel.id} id={panel.id} title={panel.title}>
+                {getPanelComponent(panel)}
+              </SortablePanel>
+            ))}
           </div>
-          <div className={styles.chartCard}>
-            <h2>Contextual Snippets</h2>
-            <ul className={styles.snippetList}>
-              {mockSnippets.map((s) => (
-                <li key={s.id}>
-                  <span className={styles.time}>
-                    {Math.floor(s.timestamp / 60)}:{String(s.timestamp % 60).padStart(2, '0')}
-                  </span>
-                  {s.text} <a href="#">({s.video})</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-    </main>
+        </SortableContext>
+      </DndContext>
+    </div>
   );
 }

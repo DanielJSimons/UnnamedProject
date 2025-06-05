@@ -14,9 +14,20 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  // Show sidebar when logged in or on data-driven pages
+  // Don't show any navigation while auth state is loading
+  if (isLoading) {
+    return (
+      <div className={styles.layout}>
+        <main className={styles.content}>
+          {children}
+        </main>
+      </div>
+    );
+  }
+
+  // Always show sidebar when logged in
   const showSidebar = user || [
     '/entity',
     '/video',
@@ -29,7 +40,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {!user && <Header />}
       <div className={styles.main}>
         {showSidebar && <Sidebar />}
-        <main className={styles.content}>
+        <main className={`${styles.content} ${showSidebar ? styles.withSidebar : ''}`}>
           {children}
         </main>
       </div>

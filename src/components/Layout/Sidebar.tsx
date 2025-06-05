@@ -1,14 +1,92 @@
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
-import { FaHome, FaChartLine, FaTachometerAlt, FaUserCog, FaSignOutAlt, FaDollarSign } from 'react-icons/fa';
+import { 
+  FaHome, 
+  FaChartLine, 
+  FaTachometerAlt, 
+  FaUserCog, 
+  FaSignOutAlt, 
+  FaDollarSign,
+  FaBookmark,
+  FaBell,
+  FaHistory
+} from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.scss';
+
+interface NavItem {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+}
 
 export const Sidebar: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(true);
   const { user, logout } = useAuth();
+  const pathname = usePathname();
+
+  const mainNavItems: NavItem[] = [
+    {
+      href: '/',
+      icon: <FaHome className={styles.icon} />,
+      label: 'Search/Home'
+    },
+    {
+      href: '/explore',
+      icon: <FaChartLine className={styles.icon} />,
+      label: 'Explore Trends'
+    },
+    {
+      href: '/dashboard',
+      icon: <FaTachometerAlt className={styles.icon} />,
+      label: 'My Dashboard'
+    },
+    {
+      href: '/bookmarks',
+      icon: <FaBookmark className={styles.icon} />,
+      label: 'Saved Items'
+    },
+    {
+      href: '/history',
+      icon: <FaHistory className={styles.icon} />,
+      label: 'History'
+    },
+    {
+      href: '/notifications',
+      icon: <FaBell className={styles.icon} />,
+      label: 'Notifications'
+    }
+  ];
+
+  const userNavItems: NavItem[] = [
+    {
+      href: '/settings',
+      icon: <FaUserCog className={styles.icon} />,
+      label: 'Settings'
+    },
+    {
+      href: '/pricing',
+      icon: <FaDollarSign className={styles.icon} />,
+      label: 'Pricing'
+    }
+  ];
+
+  const renderNavItem = (item: NavItem) => {
+    const isActive = pathname === item.href;
+    return (
+      <Link 
+        key={item.href} 
+        href={item.href} 
+        className={`${styles.navItem} ${isActive ? styles.active : ''}`}
+      >
+        {item.icon}
+        {isOpen && <span>{item.label}</span>}
+      </Link>
+    );
+  };
 
   return (
     <Collapsible.Root
@@ -18,38 +96,16 @@ export const Sidebar: React.FC = () => {
     >
       <div className={styles.content}>
         <nav className={styles.navigation}>
-          <Link href="/" className={styles.navItem}>
-            <FaHome className={styles.icon} />
-            {isOpen && <span>Search/Home</span>}
-          </Link>
-          <Link href="/explore" className={styles.navItem}>
-            <FaChartLine className={styles.icon} />
-            {isOpen && <span>Explore Trends</span>}
-          </Link>
-          <Link href="/dashboard" className={styles.navItem}>
-            <FaTachometerAlt className={styles.icon} />
-            {isOpen && <span>My Dashboard</span>}
-          </Link>
-          {/* TODO: Add contextual filters based on page view */}
-          {/* TODO: Add "Saved Searches" for logged-in users */}
+          {mainNavItems.map(renderNavItem)}
         </nav>
 
-        {user && (
-          <div className={styles.userSection}>
-            <Link href="/settings" className={styles.navItem}>
-              <FaUserCog className={styles.icon} />
-              {isOpen && <span>Settings</span>}
-            </Link>
-            <Link href="/pricing" className={styles.navItem}>
-              <FaDollarSign className={styles.icon} />
-              {isOpen && <span>Pricing</span>}
-            </Link>
-            <button onClick={logout} className={styles.navItem}>
-              <FaSignOutAlt className={styles.icon} />
-              {isOpen && <span>Sign Out</span>}
-            </button>
-          </div>
-        )}
+        <div className={styles.userSection}>
+          {userNavItems.map(renderNavItem)}
+          <button onClick={logout} className={styles.navItem}>
+            <FaSignOutAlt className={styles.icon} />
+            {isOpen && <span>Sign Out</span>}
+          </button>
+        </div>
 
         <Collapsible.Trigger asChild>
           <button className={styles.trigger}>

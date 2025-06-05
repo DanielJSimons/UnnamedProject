@@ -1,103 +1,101 @@
 @use 'sass:color';
 @import '@/styles/variables';
 
+// Workaround for color-error variable not being available
+$color-error: #B71C1C;
+
 .authPage {
   min-height: 100vh;
-  background-color: $color-background;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: $spacing-xl;
+  padding: $spacing-xl 0;
+  background: linear-gradient(135deg, rgba($color-primary, 0.1), rgba($color-primary, 0.05));
 }
 
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 480px;
   margin: 0 auto;
+  padding: 0 $spacing-md;
 }
 
 .contentWrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   background-color: $color-background;
   border-radius: $radius-lg;
-  overflow: hidden;
   box-shadow: $shadow-lg;
-  min-height: 600px;
+  overflow: hidden;
 }
 
 .formSection {
   padding: $spacing-2xl;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .formWrapper {
-  max-width: 400px;
-  margin: 0 auto;
-  width: 100%;
-
   h1 {
-    font-family: $font-heading;
     font-size: $font-size-3xl;
-    color: $color-text;
+    font-weight: $font-weight-bold;
     margin-bottom: $spacing-sm;
+    color: $color-text;
   }
 
   h2 {
-    font-family: $font-heading;
     font-size: $font-size-lg;
+    font-weight: $font-weight-normal;
     color: $color-text-secondary;
-    margin-bottom: $spacing-2xl;
+    margin-bottom: $spacing-xl;
   }
 }
 
-.form {
-  margin-bottom: $spacing-xl;
+.error {
+  background-color: rgba($color-error, 0.1);
+  color: $color-error;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+  font-size: $font-size-sm;
+  border: 1px solid rgba($color-error, 0.2);
 }
 
 .field {
   position: relative;
   margin-bottom: $spacing-md;
 
+  .fieldIcon {
+    position: absolute;
+    left: $spacing-md;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $color-text-secondary;
+    width: 20px;
+    height: 20px;
+  }
+
   input {
     width: 100%;
     padding: $spacing-md;
-    padding-left: $spacing-2xl;
-    border: 1px solid rgba($color-text, 0.1);
-    border-radius: $radius-lg;
-    background-color: rgba($color-text, 0.02);
-    color: $color-text;
+    padding-left: calc(#{$spacing-md} * 2 + 20px);
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
     font-size: $font-size-base;
-    transition: all $transition-normal;
+    transition: all $transition-fast;
 
     &:focus {
       outline: none;
       border-color: $color-primary;
-      background-color: rgba($color-primary, 0.02);
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
     }
 
-    &::placeholder {
-      color: rgba($color-text, 0.4);
+    &:disabled {
+      background-color: rgba($color-text, 0.05);
+      cursor: not-allowed;
     }
   }
 }
 
-.fieldIcon {
-  position: absolute;
-  left: $spacing-md;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: rgba($color-text, 0.4);
-  pointer-events: none;
-}
-
 .forgotPassword {
   text-align: right;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
 
   a {
     color: $color-primary;
@@ -106,7 +104,7 @@
     transition: color $transition-normal;
 
     &:hover {
-      color: darken($color-primary, 10%);
+      color: color.adjust($color-primary, $lightness: -10%);
       text-decoration: underline;
     }
   }
@@ -123,15 +121,21 @@
   cursor: pointer;
   transition: all $transition-normal;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: color.adjust($color-primary, $lightness: -10%);
     transform: translateY(-2px);
     box-shadow: $shadow-md;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: none;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
   }
 }
 
@@ -192,75 +196,47 @@
     flex-shrink: 0;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: rgba($color-text, 0.02);
     transform: translateY(-2px);
     box-shadow: $shadow-sm;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: none;
   }
 
-  &.microsoft {
-    background-color: #2F2F2F;
-    color: $color-text-light;
-    border-color: #2F2F2F;
-
-    &:hover {
-      background-color: #1F1F1F;
-    }
-  }
-
-  &.google {
-    background-color: #fff;
-    color: #757575;
-    border-color: #ddd;
-    
-    &:hover {
-      background-color: #f8f8f8;
-    }
-  }
-
-  &.github {
-    background-color: #24292e;
-    color: $color-text-light;
-    border-color: #24292e;
-
-    &:hover {
-      background-color: #1a1e22;
-    }
-  }
-
-  &.linkedin {
-    background-color: #0A66C2;
-    color: $color-text-light;
-    border-color: #0A66C2;
-
-    &:hover {
-      background-color: #004182;
-    }
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
   }
 }
 
 .switchMode {
+  margin-top: $spacing-lg;
   text-align: center;
   color: $color-text-secondary;
-  margin-top: $spacing-xl;
+  font-size: $font-size-sm;
 
   button {
     background: none;
     border: none;
     color: $color-primary;
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-medium;
     cursor: pointer;
-    padding: 0 $spacing-xs;
-    transition: color $transition-normal;
+    padding: $spacing-xs;
+    transition: color $transition-fast;
 
-    &:hover {
-      color: darken($color-primary, 10%);
+    &:hover:not(:disabled) {
+      color: color.adjust($color-primary, $lightness: -10%);
       text-decoration: underline;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
   }
 }
@@ -314,25 +290,7 @@
 }
 
 /* Responsive styles */
-@media (max-width: $breakpoint-lg) {
-  .contentWrapper {
-    grid-template-columns: 1fr;
-  }
-
-  .infoSection {
-    display: none;
-  }
-
-  .formWrapper {
-    max-width: 100%;
-  }
-}
-
 @media (max-width: $breakpoint-md) {
-  .authPage {
-    padding: $spacing-md;
-  }
-
   .formSection {
     padding: $spacing-xl;
   }
@@ -345,9 +303,5 @@
     h2 {
       font-size: $font-size-base;
     }
-  }
-
-  .socialButtons {
-    grid-template-columns: 1fr;
   }
 } 

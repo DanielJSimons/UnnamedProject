@@ -1,23 +1,36 @@
+@import '@/styles/variables';
+
 .layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: $color-background-alt;
 }
 
 .main {
   flex: 1;
   display: flex;
+  position: relative;
 }
 
 .content {
   flex: 1;
-  padding: var(--spacing-lg);
+  padding: $spacing-lg;
   overflow-y: auto;
+  transition: padding-left $transition-normal;
+
+  &.withSidebar {
+    padding-left: calc(240px + #{$spacing-lg}); // Sidebar width + padding
+  }
 }
 
 /* Responsive styles */
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .content {
-    padding: var(--spacing-md);
+    padding: $spacing-md;
+
+    &.withSidebar {
+      padding-left: $spacing-md;
+    }
   }
 } 

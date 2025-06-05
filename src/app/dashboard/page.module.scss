@@ -1,133 +1,336 @@
 @import '@/styles/variables';
 
-.dashboardPage {
-  padding: $spacing-2xl 0;
-  background-color: $color-background;
-  min-height: calc(100vh - 64px);
+// Workaround for color-error variable not being available
+$color-error: #B71C1C;
+
+.dashboard {
+  background-color: #121212;
+  color: #EAEAEA;
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .header {
-  text-align: center;
-  margin-bottom: $spacing-3xl;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1F1F1F;
+  border-bottom: 1px solid #333;
 
-  .title {
-    font-size: $font-size-4xl;
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #FFFFFF;
   }
 }
 
-.subtitle {
-  color: $color-text-secondary;
-}
-
-.chartsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-xl;
-  margin-bottom: $spacing-3xl;
-
-  .chartCard {
-    flex: 1 1 300px;
-    background: $color-background-alt;
-    padding: $spacing-lg;
-    border-radius: $radius-md;
-    box-shadow: $shadow-sm;
-  }
-}
-
-.fullRow {
-  margin-bottom: $spacing-3xl;
-  background: $color-background-alt;
-  padding: $spacing-lg;
-  border-radius: $radius-md;
-  box-shadow: $shadow-sm;
-}
-
-.heatmap {
-  display: flex;
-  gap: $spacing-sm;
-  justify-content: center;
-  margin-top: $spacing-md;
-}
-
-.heatCell {
-  width: 80px;
-  height: 80px;
-  background-color: $color-primary;
-  color: $color-text-light;
+.headerControls {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: $radius-sm;
-  transition: opacity $transition-normal;
+  gap: 1rem;
 }
 
-.snippetList {
-  list-style: none;
-  padding: 0;
-
-  li {
-    margin-bottom: $spacing-sm;
-  }
-
-  .time {
-    font-weight: $font-weight-semibold;
-    margin-right: $spacing-xs;
-  }
+.entityManagementContainer {
+  background-color: rgba(30, 30, 50, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.queryControls {
+.mainChartContainer {
+  padding: 2rem;
+  margin: 2rem;
+  background-color: #1F1F1F;
+  border-radius: 12px;
+  border: 1px solid #333;
+  position: relative;
+}
+
+.chartControls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
   display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-md;
-  margin-bottom: $spacing-lg;
+  gap: 1rem;
+}
 
-  input {
-    padding: $spacing-xs $spacing-sm;
-    border: 1px solid $color-border;
-    border-radius: $radius-sm;
-    font: inherit;
+.metricSelector {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #a0a0c0;
   }
+
+  select {
+    background-color: #2c2c2c;
+    color: #EAEAEA;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+
+    &:hover {
+      background-color: #383838;
+    }
+  }
+}
+
+.resetZoomButton {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  background-color: rgba(108, 99, 255, 0.2);
+  color: #6C63FF;
+  border: 1px solid #6C63FF;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(108, 99, 255, 0.3);
+  }
+}
+
+.timeframeSelector {
+  display: flex;
+  background-color: #162447;
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid #4a4a6a;
 
   button {
-    background: $color-primary;
-    color: $color-text-light;
+    background-color: transparent;
     border: none;
-    padding: $spacing-xs $spacing-sm;
-    border-radius: $radius-sm;
+    color: #a0a0c0;
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+
+    &.active, &:hover {
+      background-color: #6c63ff;
+      color: #fff;
+    }
+  }
+}
+
+.secondaryMetricControl {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  label {
+    font-size: $font-size-sm;
+    color: #94A3B8;
+  }
+
+  select {
+    padding: $spacing-xs $spacing-sm;
+    background-color: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #E2E8F0;
+    border-radius: $radius-md;
+  }
+}
+
+.queryForm {
+  display: flex;
+  gap: $spacing-md;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: $spacing-lg;
+}
+
+.queryInput {
+  flex-grow: 1;
+  padding: $spacing-md;
+  background-color: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #E2E8F0;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.3);
+  }
+}
+
+.addButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-primary;
+  color: $color-text-light;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  
+  &:hover {
+    background-color: darken($color-primary, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba($color-primary, 0.3);
   }
 }
 
 .queryList {
   display: flex;
   flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.queryTag {
+  display: flex;
+  align-items: center;
   gap: $spacing-sm;
-  margin-bottom: $spacing-lg;
+  background-color: rgba(148, 163, 184, 0.1);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  color: #E2E8F0;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  
+  .colorDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: $font-size-lg;
+    color: #94A3B8;
+    padding: 0;
+    line-height: 1;
 
-  .queryItem {
-    display: flex;
-    align-items: center;
-    padding: 2px $spacing-xs;
-    border-radius: $radius-sm;
-    color: $color-text-light;
-
-    button {
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      margin-left: $spacing-xs;
+    &:hover {
+      color: #F8FAFC;
     }
   }
 }
 
-.toggleControls {
-  margin-bottom: $spacing-xl;
+.chartContainer {
+  position: relative;
+  min-height: 400px;
+}
+
+.loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(15, 23, 42, 0.7);
+  color: #E2E8F0;
+  font-size: $font-size-lg;
+  z-index: 10;
+}
+
+.panelsSection {
+  margin-top: $spacing-xl;
+}
+
+.panelControls {
+  margin-bottom: $spacing-lg;
 
   label {
-    margin-right: $spacing-md;
     display: inline-flex;
     align-items: center;
-    gap: $spacing-xs;
+    gap: $spacing-sm;
+    cursor: pointer;
+    color: #94A3B8;
+
+    &:hover {
+      color: #E2E8F0;
+    }
   }
+}
+
+.panelsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-lg;
+}
+
+.chartWrapper {
+  position: relative;
+}
+
+.xAxisLabel {
+  text-align: center;
+  margin-top: 1rem;
+  color: #A0A0A0;
+  font-size: 0.875rem;
+}
+
+.addEntityForm {
+  display: flex;
+  gap: 10px;
+}
+
+.addEntityInput {
+  background: #162447;
+  border: 1px solid #4a4a6a;
+  color: #e0e0e0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 1rem;
+  min-width: 300px;
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.5);
+  }
+}
+
+.addEntityButton {
+  background-color: #6c63ff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #584fcf;
+  }
+}
+
+.pageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  padding: 0 2rem 2rem;
 }

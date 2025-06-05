@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout } from '@/components/Layout/Layout';
 import { AuthProvider } from '@/context/AuthContext';
-import '@/styles/global.scss';
+import './globals.css';
 
 export const metadata = {
   title: 'Unnamed Project - Video News Analysis & Sentiment Tracking',

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { FiMail, FiLock } from 'react-icons/fi';
+import { FiMail, FiLock, FiUser } from 'react-icons/fi';
 import { 
   FaMicrosoft, 
   FaGoogle, 
@@ -37,33 +38,41 @@ const signupFields: FormField[] = [
   {
     type: 'text',
     placeholder: 'Full Name',
-    icon: <FiMail className={styles.fieldIcon} />,
+    icon: <FiUser className={styles.fieldIcon} />,
     name: 'name'
   },
   ...loginFields
 ];
 
 export default function AuthPage() {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: ''
   });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { login, signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
     try {
       if (isLogin) {
         await login(formData.email, formData.password);
       } else {
         await signup(formData.name, formData.email, formData.password);
       }
-      window.location.href = '/dashboard';
+      router.push('/dashboard');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Authentication failed';
-      alert(message);
+      setError(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,11 +82,12 @@ export default function AuthPage() {
       ...prev,
       [name]: value
     }));
+    setError(null);
   };
 
   const toggleMode = () => {
     setIsLogin(prev => !prev);
-    // Reset form data when switching modes
+    setError(null);
     setFormData({
       name: '',
       email: '',
@@ -94,20 +104,38 @@ export default function AuthPage() {
               <h1>{isLogin ? 'Welcome back' : 'Create account'}</h1>
               <h2>{isLogin ? 'Sign in to continue' : 'Get started with Unnamed Project'}</h2>
 
+              {error && (
+                <div className={styles.error}>
+                  {error}
+                </div>
+              )}
+
               <div className={styles.socialButtons}>
-                <button className={`${styles.socialButton} ${styles.microsoft}`}>
+                <button 
+                  className={`${styles.socialButton} ${styles.microsoft}`}
+                  disabled={isLoading}
+                >
                   <FaMicrosoft className={styles.icon} />
                   Continue with Microsoft
                 </button>
-                <button className={`${styles.socialButton} ${styles.google}`}>
+                <button 
+                  className={`${styles.socialButton} ${styles.google}`}
+                  disabled={isLoading}
+                >
                   <FaGoogle className={styles.icon} />
                   Continue with Google
                 </button>
-                <button className={`${styles.socialButton} ${styles.github}`}>
+                <button 
+                  className={`${styles.socialButton} ${styles.github}`}
+                  disabled={isLoading}
+                >
                   <FaGithub className={styles.icon} />
                   Continue with GitHub
                 </button>
-                <button className={`${styles.socialButton} ${styles.linkedin}`}>
+                <button 
+                  className={`${styles.socialButton} ${styles.linkedin}`}
+                  disabled={isLoading}
+                >
                   <FaLinkedin className={styles.icon} />
                   Continue with LinkedIn
                 </button>
@@ -117,7 +145,7 @@ export default function AuthPage() {
                 <span>or continue with email</span>
               </div>
 
-              <form onSubmit={handleSubmit} className={styles.form}>
+              <form onSubmit={handleSubmit}>
                 {(isLogin ? loginFields : signupFields).map((field, index) => (
                   <div key={index} className={styles.field}>
                     {field.icon}
@@ -128,6 +156,7 @@ export default function AuthPage() {
                       value={formData[field.name as keyof typeof formData]}
                       onChange={handleInputChange}
                       required
+                      disabled={isLoading}
                     />
                   </div>
                 ))}
@@ -138,14 +167,18 @@ export default function AuthPage() {
                   </div>
                 )}
 
-                <button type="submit" className={styles.submitButton}>
-                  {isLogin ? 'Sign In' : 'Create Account'}
+                <button 
+                  type="submit" 
+                  className={styles.submitButton}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
                 </button>
               </form>
 
               <div className={styles.switchMode}>
                 {isLogin ? "Don't have an account? " : 'Already have an account? '}
-                <button onClick={toggleMode}>
+                <button onClick={toggleMode} disabled={isLoading}>
                   {isLogin ? 'Sign up' : 'Sign in'}
                 </button>
               </div>

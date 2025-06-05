@@ -5,8 +5,8 @@ from pathlib import Path
 PGHOST = os.environ.get("PGHOST", "localhost")
 PGPORT = os.environ.get("PGPORT", "5432")
 PGDATABASE = os.environ.get("PGDATABASE", "videos")
-PGUSER = os.environ.get("PGUSER", "postgres")
-PGPASSWORD = os.environ.get("PGPASSWORD", "postgres")
+PGUSER = os.environ.get("PGUSER", "videos")
+PGPASSWORD = os.environ.get("PGPASSWORD", "videos")
 
 DATABASE_URL = f"postgresql+psycopg2://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
 
