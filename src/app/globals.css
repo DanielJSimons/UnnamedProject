@@ -14,6 +14,7 @@
   --text-color: #212529; /* Dark Charcoal - primary text */
   --text-secondary: #343A40; /* Alternative Dark - secondary text */
   --text-light: #F8F9FA; /* Light text for dark backgrounds */
+  --secondary-color: var(--text-secondary);
   
   /* UI Elements */
   --border-color: #CED4DA; /* Light Gray - borders and dividers */

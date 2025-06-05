@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import * as Collapsible from '@radix-ui/react-collapsible';
-import { HomeIcon, BarChartIcon, DashboardIcon, ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
+import { FaHome, FaChartLine, FaTachometerAlt } from 'react-icons/fa';
 import styles from './Sidebar.module.scss';
 
 export const Sidebar: React.FC = () => {
@@ -16,15 +17,15 @@ export const Sidebar: React.FC = () => {
       <div className={styles.content}>
         <nav className={styles.navigation}>
           <Link href="/" className={styles.navItem}>
-            <HomeIcon className={styles.icon} />
+            <FaHome className={styles.icon} />
             {isOpen && <span>Search/Home</span>}
           </Link>
           <Link href="/explore" className={styles.navItem}>
-            <BarChartIcon className={styles.icon} />
+            <FaChartLine className={styles.icon} />
             {isOpen && <span>Explore Trends</span>}
           </Link>
           <Link href="/dashboard" className={styles.navItem}>
-            <DashboardIcon className={styles.icon} />
+            <FaTachometerAlt className={styles.icon} />
             {isOpen && <span>My Dashboard</span>}
           </Link>
           {/* TODO: Add contextual filters based on page view */}
