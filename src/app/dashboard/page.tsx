@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { SplitText } from '@/components/ReactBits/SplitText';
+import SplitText from '@/components/ReactBits/SplitText';
 import BlurText from '@/components/ReactBits/BlurText';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
