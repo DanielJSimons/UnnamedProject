@@ -1,4 +1,10 @@
+import sys
+from pathlib import Path
+
 import pytest
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 from app import app
 from models import Base, Video, VideoStatistic, Thumbnail, Caption
 from sqlalchemy import create_engine
