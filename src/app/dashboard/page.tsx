@@ -4,17 +4,36 @@ import React from 'react';
 import SplitText from '@/components/ReactBits/SplitText';
 import BlurText from '@/components/ReactBits/BlurText';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer,
-  ScatterChart, Scatter, ZAxis
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+  ZAxis,
 } from 'recharts';
 import styles from './page.module.scss';
 
 // Mock data placeholders
 const mockTrend = Array.from({ length: 12 }, (_, i) => ({
-  date: `2024-${(i+1).toString().padStart(2,'0')}-01`,
-  sentiment: Math.random() * 2 - 1,
-  mentions: Math.floor(Math.random()*100)+20,
+  date: `2024-${(i + 1).toString().padStart(2, '0')}-01`,
+  sentiment: parseFloat((Math.random() * 2 - 1).toFixed(2)),
+  combinedScore: parseFloat((Math.random() * 2 - 1).toFixed(2)),
+  valence: parseFloat((Math.random() * 2 - 1).toFixed(2)),
+  continuousScore: parseFloat((Math.random() * 2 - 1).toFixed(2)),
+  signedValue: parseFloat((Math.random() * 2 - 1).toFixed(2)),
+  score: parseFloat((Math.random() * 2 - 1).toFixed(2)),
+  expSent: parseFloat((Math.random() * 2 - 1).toFixed(2)),
+  mentions: Math.floor(Math.random() * 100) + 20,
 }));
 
 const mockDistribution = [
@@ -63,14 +82,21 @@ export default function DashboardPage() {
       {/* Trend & Distribution */}
       <section className={styles.chartsRow}>
         <div className={styles.chartCard}>
-          <h2>Sentiment Trend</h2>
+          <h2>Sentiment Metrics Trend</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={mockTrend}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
-              <YAxis domain={[-1,1]} />
+              <YAxis domain={[-1, 1]} />
               <Tooltip />
+              <Legend />
               <Line type="monotone" dataKey="sentiment" stroke="#00695C" />
+              <Line type="monotone" dataKey="combinedScore" stroke="#B8860B" />
+              <Line type="monotone" dataKey="valence" stroke="#B71C1C" />
+              <Line type="monotone" dataKey="continuousScore" stroke="#B2DFDB" />
+              <Line type="monotone" dataKey="signedValue" stroke="#CFD8DC" />
+              <Line type="monotone" dataKey="score" stroke="#F8BBD0" />
+              <Line type="monotone" dataKey="expSent" stroke="#512DA8" />
             </LineChart>
           </ResponsiveContainer>
         </div>

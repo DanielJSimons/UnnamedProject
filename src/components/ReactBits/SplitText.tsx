@@ -1,4 +1,4 @@
-import { useSprings, animated, SpringValue, animated as a } from '@react-spring/web';
+import { useSprings, animated as a } from '@react-spring/web';
 import { useEffect, useRef, useState } from 'react';
 
 interface SplitTextProps {
@@ -7,17 +7,10 @@ interface SplitTextProps {
   delay?: number;
   animationFrom?: { opacity: number; transform: string };
   animationTo?: { opacity: number; transform: string };
-  easing?: string;
   threshold?: number;
   rootMargin?: string;
   textAlign?: 'left' | 'center' | 'right';
   onLetterAnimationComplete?: () => void;
-}
-
-// Define a type for the spring values
-interface SpringProps {
-  opacity: SpringValue<number>;
-  transform: SpringValue<string>;
 }
 
 const AnimatedLetter = a('span');
@@ -28,7 +21,6 @@ const SplitText = ({
   delay = 100,
   animationFrom = { opacity: 0, transform: 'translate3d(0,40px,0)' },
   animationTo = { opacity: 1, transform: 'translate3d(0,0,0)' },
-  easing = 'easeOutCubic',
   threshold = 0.1,
   rootMargin = '-100px',
   textAlign = 'center',
