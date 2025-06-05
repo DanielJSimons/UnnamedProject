@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { GlobeIcon, MagnifyingGlassIcon, LightningBoltIcon, PieChartIcon, LayersIcon } from '@radix-ui/react-icons';
 import styles from './page.module.scss';
 
@@ -62,8 +63,8 @@ export default function WhyUnnamedProjectPage() {
           <h2>Go Deeper Than the Surface. Understand the Real Narrative.</h2>
           <p className={styles.intro}>
             In a world saturated with information, Unnamed Project offers a unique
-            lens to understand how news is shaped and perceived. We're not just
-            another news aggregator; we're an analytical engine designed to provide
+            lens to understand how news is shaped and perceived. We&apos;re not just
+            another news aggregator; we&apos;re an analytical engine designed to provide
             clarity and depth from the complex world of video journalism.
           </p>
         </header>
@@ -86,12 +87,12 @@ export default function WhyUnnamedProjectPage() {
             accessible tools for navigating the complex world of video news.
           </p>
           <div className={styles.cta}>
-            <a href="/" className={styles.primaryButton}>
+            <Link href="/" className={styles.primaryButton}>
               Start Exploring Today
-            </a>
-            <a href="/pricing" className={styles.secondaryButton}>
+            </Link>
+            <Link href="/pricing" className={styles.secondaryButton}>
               View Pricing Options
-            </a>
+            </Link>
           </div>
         </section>
       </div>

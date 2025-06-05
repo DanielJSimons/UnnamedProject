@@ -95,7 +95,7 @@ export default function PricingPage() {
       <div className="container">
         <header className={styles.header}>
           <h1>Simple, Transparent Pricing</h1>
-          <h2>Choose the Plan That's Right for You</h2>
+          <h2>Choose the Plan That&apos;s Right for You</h2>
           <p className={styles.intro}>
             All plans come with a 14-day free trial. No credit card required.
             Cancel anytime. Need something specific? Contact us for a custom plan.
@@ -120,11 +120,11 @@ export default function PricingPage() {
             </div>
             <div className={styles.question}>
               <h3>What happens after my trial ends?</h3>
-              <p>
-                After your 14-day trial, you'll be asked to select a plan to
-                continue using Unnamed Project. We'll send you a reminder before
-                your trial expires.
-              </p>
+                <p>
+                  After your 14-day trial, you&apos;ll be asked to select a plan to
+                  continue using Unnamed Project. We&apos;ll send you a reminder before
+                  your trial expires.
+                </p>
             </div>
             <div className={styles.question}>
               <h3>Do you offer academic discounts?</h3>

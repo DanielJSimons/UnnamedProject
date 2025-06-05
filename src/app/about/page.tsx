@@ -85,10 +85,10 @@ export default function About() {
 
           <section className={styles.section}>
             <h2>Contact Us</h2>
-            <p>
-              Have questions about our platform or interested in a custom solution?
-              We'd love to hear from you.
-            </p>
+              <p>
+                Have questions about our platform or interested in a custom solution?
+                We&apos;d love to hear from you.
+              </p>
             <a href="mailto:contact@example.com" className={styles.contactButton}>
               Get in Touch
             </a>

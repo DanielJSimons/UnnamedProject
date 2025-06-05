@@ -1,4 +1,5 @@
 import React from 'react';
+import type { PageProps } from 'next';
 import { PieChart, Pie, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './page.module.scss';
 
@@ -24,7 +25,7 @@ const mockSnippets = Array.from({ length: 5 }, (_, i) => ({
   sentiment: Math.random() * 2 - 1,
 }));
 
-export default function EntityDashboard({ params }: { params: { entityName: string } }) {
+export default function EntityDashboard({ params }: PageProps<{ entityName: string }>) {
   const { entityName } = params;
   const decodedEntityName = decodeURIComponent(entityName);
 

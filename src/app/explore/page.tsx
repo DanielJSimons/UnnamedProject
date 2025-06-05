@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import styles from './page.module.scss';
 
@@ -16,7 +17,7 @@ const mockTopEntities = [
   mentions: item.mentions + Math.floor(Math.random() * 50), // Add some randomness
 }));
 
-const mockSentimentData = [
+const mockSentimentData: SentimentData[] = [
   { sentiment: 'Very Positive', count: 156, color: '#00695C' },
   { sentiment: 'Positive', count: 423, color: '#B2DFDB' },
   { sentiment: 'Neutral', count: 589, color: '#CFD8DC' },
@@ -36,7 +37,7 @@ export default function ExplorePage() {
       <div className="container">
         <header className={styles.header}>
           <h1>Explore News Narrative Trends</h1>
-          <h2>Discover What's Shaping the Conversation</h2>
+          <h2>Discover What&apos;s Shaping the Conversation</h2>
           <p className={styles.intro}>
             Dive into the broader landscape of video news. This dashboard reveals
             platform-wide trends, highlighting the most discussed entities, overall
@@ -67,7 +68,7 @@ export default function ExplorePage() {
         </section>
 
         <section className={styles.section}>
-          <h2>What's the General Tone of Coverage?</h2>
+          <h2>What&apos;s the General Tone of Coverage?</h2>
           <div className={styles.chartContainer}>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={mockSentimentData}>
@@ -95,7 +96,7 @@ export default function ExplorePage() {
             <h2>Trending Entities</h2>
             <h3>Spotlighting Rapid Risers & Fallers</h3>
             <p>
-              Soon, you'll be able to see entities experiencing significant shifts
+              Soon, you&apos;ll be able to see entities experiencing significant shifts
               in mention frequency or sentiment scores, helping you identify
               breakout topics and changing perceptions.
             </p>
@@ -105,7 +106,7 @@ export default function ExplorePage() {
             <h2>Sentiment by Source/Category</h2>
             <h3>Compare Narratives Across Channels</h3>
             <p>
-              We're working on tools to let you compare how different news
+              We&apos;re working on tools to let you compare how different news
               channels or categories of sources cover the same topics and entities.
             </p>
           </div>
@@ -113,9 +114,9 @@ export default function ExplorePage() {
 
         <div className={styles.cta}>
           <h2>Have a specific entity in mind?</h2>
-          <a href="/" className={styles.ctaButton}>
+          <Link href="/" className={styles.ctaButton}>
             Start Your Own Analysis
-          </a>
+          </Link>
         </div>
       </div>
     </main>
