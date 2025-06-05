@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useSprings, animated } from '@react-spring/web';
 
-interface SplitTextProps {
+interface BlurTextProps {
   text?: string;
   className?: string;
   delay?: number;
@@ -27,7 +27,7 @@ const BlurText = ({
   animationTo,
   easing = 'easeOutCubic',
   onAnimationComplete,
-}) => {
+}: BlurTextProps) => {
   const elements: string[] = animateBy === 'words' ? text.split(' ') : text.split('');
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
