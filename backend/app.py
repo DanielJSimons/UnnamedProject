@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
@@ -7,6 +9,14 @@ from models import Base, Video, VideoStatistic, Thumbnail, Caption
 from youtube_service import YouTubeService
 
 app = Flask(__name__)
+CORS(app)
+
+users = {
+    "test@example.com": {
+        "name": "Test User",
+        "password": generate_password_hash("password")
+    }
+}
 
 # Database setup
 engine = create_engine(DATABASE_URL)
@@ -23,6 +33,33 @@ def get_db_session():
         raise
     finally:
         session.close()
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json() or {}
+    email = data.get('email')
+    password = data.get('password')
+    user = users.get(email)
+    if user and check_password_hash(user['password'], password):
+        return jsonify({"message": "Login successful", "token": "dummy-token"}), 200
+    return jsonify({"error": "Invalid credentials"}), 401
+
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json() or {}
+    email = data.get('email')
+    password = data.get('password')
+    name = data.get('name')
+    if not all([email, password, name]):
+        return jsonify({"error": "Missing fields"}), 400
+    if email in users:
+        return jsonify({"error": "User already exists"}), 400
+    users[email] = {
+        "name": name,
+        "password": generate_password_hash(password)
+    }
+    return jsonify({"message": "User created"}), 201
 
 @app.route('/api/v1/channels/<channel_id>/videos', methods=['POST'])
 def fetch_channel_videos(channel_id):

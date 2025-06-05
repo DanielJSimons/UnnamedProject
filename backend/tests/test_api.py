@@ -5,7 +5,7 @@ import pytest
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from app import app
+from app import app, users
 from models import Base, Video, VideoStatistic, Thumbnail, Caption
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -25,7 +25,16 @@ def client():
     # Create test database and tables
     engine = create_engine(TEST_DATABASE_URL)
     Base.metadata.create_all(engine)
-    
+
+    # Reset users dictionary for each test session
+    users.clear()
+    users.update({
+        'test@example.com': {
+            'name': 'Test User',
+            'password': users.get('test@example.com', {}).get('password')
+        }
+    })
+
     with app.test_client() as client:
         yield client
     
@@ -95,4 +104,40 @@ def test_get_video_captions_nonexistent(client):
     """Test getting captions for a nonexistent video."""
     response = client.get('/api/v1/videos/nonexistent/captions')
     assert response.status_code == 404
-    assert response.get_json()['error'] == 'No captions found' 
+    assert response.get_json()['error'] == 'No captions found'
+
+
+def test_login_success(client):
+    response = client.post('/api/login', json={
+        'email': 'test@example.com',
+        'password': 'password'
+    })
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['message'] == 'Login successful'
+
+
+def test_login_failure(client):
+    response = client.post('/api/login', json={
+        'email': 'test@example.com',
+        'password': 'wrong'
+    })
+    assert response.status_code == 401
+    assert 'error' in response.get_json()
+
+
+def test_signup_then_login(client):
+    response = client.post('/api/signup', json={
+        'name': 'New User',
+        'email': 'new@example.com',
+        'password': 'newpass'
+    })
+    assert response.status_code == 201
+    assert response.get_json()['message'] == 'User created'
+
+    login_resp = client.post('/api/login', json={
+        'email': 'new@example.com',
+        'password': 'newpass'
+    })
+    assert login_resp.status_code == 200
+    assert login_resp.get_json()['message'] == 'Login successful'
