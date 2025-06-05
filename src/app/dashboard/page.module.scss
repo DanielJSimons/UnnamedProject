@@ -1,0 +1,76 @@
+@import '@/styles/variables';
+
+.dashboardPage {
+  padding: $spacing-2xl 0;
+  background-color: $color-background;
+  min-height: calc(100vh - 64px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: $spacing-3xl;
+
+  .title {
+    font-size: $font-size-4xl;
+  }
+}
+
+.subtitle {
+  color: $color-text-secondary;
+}
+
+.chartsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-3xl;
+
+  .chartCard {
+    flex: 1 1 300px;
+    background: $color-background-alt;
+    padding: $spacing-lg;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.fullRow {
+  margin-bottom: $spacing-3xl;
+  background: $color-background-alt;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+}
+
+.heatmap {
+  display: flex;
+  gap: $spacing-sm;
+  justify-content: center;
+  margin-top: $spacing-md;
+}
+
+.heatCell {
+  width: 80px;
+  height: 80px;
+  background-color: $color-primary;
+  color: $color-text-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  transition: opacity $transition-normal;
+}
+
+.snippetList {
+  list-style: none;
+  padding: 0;
+
+  li {
+    margin-bottom: $spacing-sm;
+  }
+
+  .time {
+    font-weight: $font-weight-semibold;
+    margin-right: $spacing-xs;
+  }
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import * as Collapsible from '@radix-ui/react-collapsible';
-import { HomeIcon, BarChartIcon, ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
+import { HomeIcon, BarChartIcon, DashboardIcon, ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import styles from './Sidebar.module.scss';
 
 export const Sidebar: React.FC = () => {
@@ -23,8 +23,12 @@ export const Sidebar: React.FC = () => {
             <BarChartIcon className={styles.icon} />
             {isOpen && <span>Explore Trends</span>}
           </Link>
+          <Link href="/dashboard" className={styles.navItem}>
+            <DashboardIcon className={styles.icon} />
+            {isOpen && <span>My Dashboard</span>}
+          </Link>
           {/* TODO: Add contextual filters based on page view */}
-          {/* TODO: Add "My Dashboard", "Saved Searches" for logged-in users */}
+          {/* TODO: Add "Saved Searches" for logged-in users */}
         </nav>
 
         <Collapsible.Trigger asChild>

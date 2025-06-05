@@ -18,7 +18,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const showSidebar = [
     '/entity',
     '/video',
-    '/explore'
+    '/explore',
+    '/dashboard'
   ].some(path => pathname?.startsWith(path));
 
   return (
