@@ -1,0 +1,121 @@
+@import '@/styles/variables';
+
+.header {
+  background-color: $color-background;
+  border-bottom: 1px solid $color-border;
+  padding: $spacing-md 0;
+  position: sticky;
+  top: 0;
+  z-index: $z-index-sticky;
+  box-shadow: $shadow-md;
+}
+
+.logo {
+  font-family: $font-heading;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-primary-dark;
+  }
+}
+
+.navigationRoot {
+  display: flex;
+  align-items: center;
+}
+
+.navigationList {
+  display: flex;
+  gap: $spacing-lg;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navigationLink {
+  color: $color-text-secondary;
+  text-decoration: none;
+  font-weight: $font-weight-medium;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  transition: all $transition-fast;
+  font-size: $font-size-base;
+
+  &:hover {
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.05);
+  }
+
+  &:active {
+    background-color: rgba($color-primary, 0.1);
+  }
+}
+
+/* Special styling for auth buttons */
+.navigationList > li:last-child .navigationLink {
+  color: $color-text-light;
+  background-color: $color-primary;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-md;
+  font-weight: $font-weight-semibold;
+
+  &:hover {
+    background-color: $color-primary-dark;
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+.navigationList > li:nth-last-child(2) .navigationLink {
+  background-color: transparent;
+  color: $color-primary;
+  border: 2px solid $color-primary;
+  padding: calc(#{$spacing-sm} - 2px) calc(#{$spacing-lg} - 2px);
+
+  &:hover {
+    background-color: rgba($color-primary, 0.05);
+    color: $color-primary-dark;
+    border-color: $color-primary-dark;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: $breakpoint-md) {
+  .header {
+    padding: $spacing-sm 0;
+  }
+
+  .logo {
+    font-size: $font-size-xl;
+  }
+
+  .navigationList {
+    gap: $spacing-md;
+  }
+
+  .navigationLink {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+  }
+
+  .navigationList > li:last-child .navigationLink,
+  .navigationList > li:nth-last-child(2) .navigationLink {
+    padding: $spacing-xs $spacing-md;
+  }
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+} 

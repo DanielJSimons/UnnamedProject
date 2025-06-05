@@ -1,0 +1,353 @@
+@use 'sass:color';
+@import '@/styles/variables';
+
+.authPage {
+  min-height: 100vh;
+  background-color: $color-background;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contentWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: $color-background;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-lg;
+  min-height: 600px;
+}
+
+.formSection {
+  padding: $spacing-2xl;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.formWrapper {
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+
+  h1 {
+    font-family: $font-heading;
+    font-size: $font-size-3xl;
+    color: $color-text;
+    margin-bottom: $spacing-sm;
+  }
+
+  h2 {
+    font-family: $font-heading;
+    font-size: $font-size-lg;
+    color: $color-text-secondary;
+    margin-bottom: $spacing-2xl;
+  }
+}
+
+.form {
+  margin-bottom: $spacing-xl;
+}
+
+.field {
+  position: relative;
+  margin-bottom: $spacing-md;
+
+  input {
+    width: 100%;
+    padding: $spacing-md;
+    padding-left: $spacing-2xl;
+    border: 1px solid rgba($color-text, 0.1);
+    border-radius: $radius-lg;
+    background-color: rgba($color-text, 0.02);
+    color: $color-text;
+    font-size: $font-size-base;
+    transition: all $transition-normal;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      background-color: rgba($color-primary, 0.02);
+    }
+
+    &::placeholder {
+      color: rgba($color-text, 0.4);
+    }
+  }
+}
+
+.fieldIcon {
+  position: absolute;
+  left: $spacing-md;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: rgba($color-text, 0.4);
+  pointer-events: none;
+}
+
+.forgotPassword {
+  text-align: right;
+  margin-bottom: $spacing-lg;
+
+  a {
+    color: $color-primary;
+    text-decoration: none;
+    font-size: $font-size-sm;
+    transition: color $transition-normal;
+
+    &:hover {
+      color: darken($color-primary, 10%);
+      text-decoration: underline;
+    }
+  }
+}
+
+.submitButton {
+  width: 100%;
+  padding: $spacing-md;
+  background-color: $color-primary;
+  color: $color-text-light;
+  border: none;
+  border-radius: $radius-lg;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-normal;
+
+  &:hover {
+    background-color: color.adjust($color-primary, $lightness: -10%);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+.divider {
+  text-align: center;
+  margin: $spacing-xl 0;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 70px);
+    height: 1px;
+    background-color: rgba($color-text, 0.1);
+  }
+
+  &::before {
+    left: 0;
+  }
+
+  &::after {
+    right: 0;
+  }
+
+  span {
+    background-color: $color-background;
+    padding: 0 $spacing-md;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+  }
+}
+
+.socialButtons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+}
+
+.socialButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border: 1px solid rgba($color-text, 0.1);
+  border-radius: $radius-lg;
+  background-color: transparent;
+  color: $color-text;
+  cursor: pointer;
+  transition: all $transition-normal;
+  font-weight: $font-weight-medium;
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background-color: rgba($color-text, 0.02);
+    transform: translateY(-2px);
+    box-shadow: $shadow-sm;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &.microsoft {
+    background-color: #2F2F2F;
+    color: $color-text-light;
+    border-color: #2F2F2F;
+
+    &:hover {
+      background-color: #1F1F1F;
+    }
+  }
+
+  &.google {
+    background-color: #fff;
+    color: #757575;
+    border-color: #ddd;
+    
+    &:hover {
+      background-color: #f8f8f8;
+    }
+  }
+
+  &.github {
+    background-color: #24292e;
+    color: $color-text-light;
+    border-color: #24292e;
+
+    &:hover {
+      background-color: #1a1e22;
+    }
+  }
+
+  &.linkedin {
+    background-color: #0A66C2;
+    color: $color-text-light;
+    border-color: #0A66C2;
+
+    &:hover {
+      background-color: #004182;
+    }
+  }
+}
+
+.switchMode {
+  text-align: center;
+  color: $color-text-secondary;
+  margin-top: $spacing-xl;
+
+  button {
+    background: none;
+    border: none;
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+    cursor: pointer;
+    padding: 0 $spacing-xs;
+    transition: color $transition-normal;
+
+    &:hover {
+      color: darken($color-primary, 10%);
+      text-decoration: underline;
+    }
+  }
+}
+
+.infoSection {
+  background: linear-gradient(
+    135deg,
+    $color-primary 0%,
+    color.adjust($color-primary, $lightness: -15%) 100%
+  );
+  padding: $spacing-2xl;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: $color-text-light;
+}
+
+.infoContent {
+  max-width: 400px;
+  margin: 0 auto;
+
+  h2 {
+    font-family: $font-heading;
+    font-size: $font-size-2xl;
+    margin-bottom: $spacing-xl;
+  }
+
+  p {
+    margin-bottom: $spacing-xl;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: $spacing-md;
+      display: flex;
+      align-items: center;
+      opacity: 0.9;
+
+      &::before {
+        content: '✓';
+        margin-right: $spacing-md;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+/* Responsive styles */
+@media (max-width: $breakpoint-lg) {
+  .contentWrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .infoSection {
+    display: none;
+  }
+
+  .formWrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .authPage {
+    padding: $spacing-md;
+  }
+
+  .formSection {
+    padding: $spacing-xl;
+  }
+
+  .formWrapper {
+    h1 {
+      font-size: $font-size-2xl;
+    }
+
+    h2 {
+      font-size: $font-size-base;
+    }
+  }
+
+  .socialButtons {
+    grid-template-columns: 1fr;
+  }
+} 
