@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import { FiMail, FiLock } from 'react-icons/fi';
 import { 
   FaMicrosoft, 
@@ -49,29 +50,20 @@ export default function AuthPage() {
     email: '',
     password: ''
   });
+  const { login, signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
-    const endpoint = isLogin ? '/api/login' : '/api/signup';
     try {
-      const res = await fetch(`${baseUrl}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Request failed');
+      if (isLogin) {
+        await login(formData.email, formData.password);
+      } else {
+        await signup(formData.name, formData.email, formData.password);
       }
-
-      const data = await res.json();
-      console.log('Auth success:', data);
       window.location.href = '/dashboard';
     } catch (err) {
-      console.error('Auth error:', err);
-      alert('Authentication failed');
+      const message = err instanceof Error ? err.message : 'Authentication failed';
+      alert(message);
     }
   };
 

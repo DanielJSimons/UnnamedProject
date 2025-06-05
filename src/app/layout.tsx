@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout } from '@/components/Layout/Layout';
+import { AuthProvider } from '@/context/AuthContext';
 import '@/styles/global.scss';
 
 export const metadata = {
@@ -11,7 +12,9 @@ export const metadata = {
 // Client-side wrapper component
 const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Layout>{children}</Layout>
+    <AuthProvider>
+      <Layout>{children}</Layout>
+    </AuthProvider>
   );
 };
 
