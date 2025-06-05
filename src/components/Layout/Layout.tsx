@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
 import Sidebar from './Sidebar';
+import { useAuth } from '@/context/AuthContext';
 import styles from './Layout.module.scss';
 
 interface LayoutProps {
@@ -13,9 +14,10 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const pathname = usePathname();
-  
-  // Show sidebar on data-driven pages
-  const showSidebar = [
+  const { user } = useAuth();
+
+  // Show sidebar when logged in or on data-driven pages
+  const showSidebar = user || [
     '/entity',
     '/video',
     '/explore',
@@ -24,7 +26,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className={styles.layout}>
-      <Header />
+      {!user && <Header />}
       <div className={styles.main}>
         {showSidebar && <Sidebar />}
         <main className={styles.content}>
