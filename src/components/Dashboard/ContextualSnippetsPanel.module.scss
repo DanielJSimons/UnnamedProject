@@ -1,4 +1,4 @@
-@import '@/styles/variables';
+@use '@/styles/variables' as *;
 
 .panel {
   // Override for scrollable content
@@ -15,14 +15,22 @@
   }
 }
 
-.snippet {
-  margin-bottom: $spacing-lg;
-  padding-bottom: $spacing-lg;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+.snippetsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  height: 100%;
+  overflow-y: auto;
+}
 
-  &:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
+.snippet {
+  padding: $spacing-md;
+  background-color: $color-background-alt;
+  border-radius: $radius-sm;
+  border: 1px solid $color-border;
+
+  &:hover {
+    background-color: $color-background;
   }
 
   .sentence {
@@ -46,6 +54,33 @@
       }
     }
   }
+}
+
+.snippetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.snippetTitle {
+  font-weight: $font-weight-medium;
+  color: $color-text;
+}
+
+.snippetContent {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  line-height: 1.5;
+  margin-bottom: $spacing-sm;
+}
+
+.snippetFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
 }
 
 .sentiment {

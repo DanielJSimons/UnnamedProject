@@ -1,0 +1,157 @@
+@use '@/styles/variables' as *;
+
+/* Main container for the entire calendar view */
+.calendar {
+  color: #e0e0e0;
+  padding: $spacing-md;
+  background-color: #1c1c2e; /* Dark purple background */
+  border-radius: $radius-lg;
+  border: 1px solid #4a4a6a;
+}
+
+/* Container for all rendered months */
+.months {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @media (min-width: $breakpoint-sm) {
+    flex-direction: row;
+    gap: $spacing-2xl;
+  }
+}
+
+/* Container for a single month */
+.month {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+/* Header for a single month (e.g., "May 2025") */
+.caption {
+  display: flex;
+  justify-content: space-between; /* This is key for nav layout */
+  align-items: center;
+  padding: $spacing-sm 0;
+  height: 44px;
+}
+
+.caption_label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Navigation buttons (prev/next) */
+.nav {
+  display: inline-flex;
+  gap: $spacing-sm;
+}
+
+.nav_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  border: 1px solid #4a4a6a;
+  color: #e0e0e0;
+  border-radius: $radius-md;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #333355;
+  }
+}
+
+/* The main calendar grid */
+.table {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* A perfect 7-column grid */
+  gap: $spacing-xs;
+}
+
+/* Make the head row and body rows conform to the grid */
+.head,
+.tbody,
+.head_row,
+.row {
+  display: contents; /* This makes children direct grid items */
+}
+
+/* Styling for the day-of-week headers (Su, Mo, etc.) */
+.head_cell {
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: #8c8ca1;
+  font-weight: $font-weight-medium;
+}
+
+/* An individual cell in the calendar grid */
+.cell {
+  height: 40px;
+  padding: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The actual button for a day */
+.day {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  background-color: transparent;
+  border: none;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not([disabled]) {
+    background-color: #333355;
+    transform: scale(1.05);
+  }
+}
+
+/* Day states */
+.day_selected {
+  background-color: $color-primary !important;
+  color: #fff !important;
+  font-weight: $font-weight-bold;
+  box-shadow: 0 0 0 2px rgba($color-primary, 0.5);
+}
+
+.day_today {
+  border: 1px solid $color-accent;
+}
+
+.day_outside {
+  color: #555;
+}
+
+.day_disabled {
+  color: #444;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.day_range_start,
+.day_range_end {
+  background-color: $color-primary !important;
+  color: #fff !important;
+}
+
+.day_range_middle {
+  background-color: rgba($color-primary, 0.3) !important;
+  color: #e0e0e0 !important;
+  border-radius: 0;
+}

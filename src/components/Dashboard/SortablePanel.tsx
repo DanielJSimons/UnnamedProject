@@ -4,13 +4,16 @@ import { CSS } from '@dnd-kit/utilities';
 import { CollapsiblePanel } from './CollapsiblePanel';
 import styles from './SortablePanel.module.scss';
 
-interface SortablePanelProps {
+export interface SortablePanelProps {
   id: string;
   title: string;
   children: React.ReactNode;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  style?: React.CSSProperties;
 }
 
-export const SortablePanel: React.FC<SortablePanelProps> = ({ id, title, children }) => {
+export const SortablePanel: React.FC<SortablePanelProps> = ({ id, title, children, isExpanded, onToggleExpand, style: propStyle }) => {
   const {
     attributes,
     listeners,
@@ -21,6 +24,7 @@ export const SortablePanel: React.FC<SortablePanelProps> = ({ id, title, childre
   } = useSortable({ id });
 
   const style = {
+    ...propStyle,
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 10 : 1,
@@ -29,7 +33,13 @@ export const SortablePanel: React.FC<SortablePanelProps> = ({ id, title, childre
 
   return (
     <div ref={setNodeRef} style={style}>
-      <CollapsiblePanel title={title} dragAttributes={attributes} dragListeners={listeners}>
+      <CollapsiblePanel 
+        title={title} 
+        dragAttributes={attributes} 
+        dragListeners={listeners}
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
+      >
         {children}
       </CollapsiblePanel>
     </div>

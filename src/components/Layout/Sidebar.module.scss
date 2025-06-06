@@ -1,114 +1,267 @@
-@use 'sass:color';
-@import '@/styles/variables';
+@use '@/styles/variables' as *;
 
 .sidebar {
-  width: 240px;
-  height: 100%;
-  background: linear-gradient(135deg, $color-primary, color.adjust($color-primary, $lightness: -15%));
-  color: $color-text-light;
-  border-right: 1px solid rgba($color-text-light, 0.1);
-  transition: width $transition-normal;
   position: fixed;
   left: 0;
   top: 0;
-  bottom: 0;
+  height: 100vh;
+  background-color: $color-background-alt;
+  border-right: 1px solid $color-border;
+  transition: width $transition-normal;
   z-index: $z-index-sticky;
 
-  &.closed {
-    width: 64px;
+  &.open {
+    width: 260px;
+  }
 
-    .content {
-      padding: $spacing-md $spacing-sm;
+  &.closed {
+    width: 80px;
+
+    .navItem {
+      justify-content: center;
+      span {
+        opacity: 0;
+        width: 0;
+        margin-left: 0;
+        pointer-events: none;
+      }
+    }
+
+    .userInfo {
+      justify-content: center;
+    }
+
+    .userDetails {
+      display: none;
     }
   }
 }
 
 .content {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: $spacing-lg;
-  gap: $spacing-lg;
+  height: 100%;
+  position: relative;
 }
 
 .navigation {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-sm;
-}
-
-.userSection {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-sm;
-  padding-top: $spacing-lg;
-  border-top: 1px solid rgba($color-text-light, 0.1);
+  padding: $spacing-md;
+  flex-grow: 1;
 }
 
 .navItem {
   display: flex;
   align-items: center;
-  gap: $spacing-md;
   padding: $spacing-sm $spacing-md;
-  color: rgba($color-text-light, 0.8);
-  border-radius: $radius-md;
-  transition: all $transition-fast;
-  white-space: nowrap;
+  color: $color-text;
   text-decoration: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-  font-size: $font-size-base;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-sm;
+  transition: background-color $transition-fast, padding $transition-normal;
 
   &:hover {
-    color: $color-text-light;
-    background-color: rgba($color-text-light, 0.1);
+    background-color: $color-background;
   }
 
   &.active {
+    background-color: $color-primary;
     color: $color-text-light;
-    background-color: rgba($color-text-light, 0.15);
-    font-weight: $font-weight-medium;
-  }
-
-  .icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
   }
 
   span {
-    font-size: $font-size-base;
+    margin-left: $spacing-sm;
+    transition: opacity 0.1s ease-out, width 0.2s ease-out, margin-left 0.2s ease-out;
+    white-space: nowrap;
+    opacity: 1;
   }
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .trigger {
   position: absolute;
   right: -12px;
-  top: $spacing-lg;
+  top: 50%;
+  transform: translateY(-50%);
   width: 24px;
   height: 24px;
   background-color: $color-background;
   border: 1px solid $color-border;
-  border-radius: 50%;
+  border-radius: $radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: $color-text;
-  transition: all $transition-fast;
-  z-index: 1;
+  transition: background-color $transition-fast;
 
   &:hover {
     background-color: $color-background-alt;
-    transform: scale(1.1);
+  }
+}
+
+.userProfileSection {
+  padding: $spacing-md;
+  border-top: 1px solid $color-border;
+  margin-top: auto;
+  position: relative;
+}
+
+.profileTrigger {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+
+  &:hover .userInfo {
+    background-color: $color-background;
   }
 
-  &:active {
-    transform: scale(0.95);
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+    border-radius: $radius-sm;
+  }
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm;
+  border-radius: $radius-sm;
+  transition: background-color $transition-fast;
+  gap: $spacing-sm;
+  justify-content: center;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-full;
+  background-color: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-light;
+  flex-shrink: 0;
+}
+
+.userDetails {
+  margin-left: $spacing-sm;
+  flex-grow: 1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.userName {
+  display: block;
+  font-weight: $font-weight-medium;
+  color: $color-text;
+  font-size: $font-size-sm;
+}
+
+.userEmail {
+  display: block;
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+}
+
+.dropdownIcon {
+  margin-left: $spacing-sm;
+  color: $color-text-secondary;
+  transition: transform $transition-fast;
+
+  &.dropdownIconOpen {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdownWrapper {
+  :global([data-radix-popper-content-wrapper]) {
+    position: fixed !important;
+    z-index: $z-index-dropdown !important;
+  }
+}
+
+.dropdownContent {
+  composes: dropdownWrapper;
+  min-width: 220px;
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-sm;
+  box-shadow: $shadow-lg;
+  animation: slideIn $transition-fast ease;
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+  position: absolute;
+  left: 100%;
+  bottom: 0;
+  margin-left: $spacing-sm;
+}
+
+.dropdownItem {
+  outline: none;
+  margin-bottom: $spacing-xs;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.dropdownLink,
+.dropdownButton {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  color: $color-text;
+  text-decoration: none;
+  border: none;
+  background: none;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: $color-background-alt;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: -1px;
+  }
+
+  .icon {
+    margin-right: $spacing-sm;
+  }
+}
+
+.dropdownButton {
+  width: 100%;
+  text-align: left;
+}
+
+.dropdownSeparator {
+  height: 1px;
+  background-color: $color-border;
+  margin: $spacing-sm 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-$spacing-md);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -121,5 +274,71 @@
     &.closed {
       transform: translateX(-100%);
     }
+  }
+}
+
+/* Account Modal Styles */
+.accountModal {
+  display: flex;
+  width: 100%;
+}
+
+.accountNav {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  border-right: 1px solid $color-border;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-text;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-background;
+  }
+
+  .icon {
+    margin-right: $spacing-sm;
+  }
+}
+
+.activeTab {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background-color: $color-primary;
+  color: $color-text-light;
+  cursor: pointer;
+  transition: background-color $transition-fast;
+
+  .icon {
+    margin-right: $spacing-sm;
+  }
+}
+
+.accountBody {
+  padding: $spacing-md;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: $color-text;
+  cursor: pointer;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-background-alt;
   }
 } 

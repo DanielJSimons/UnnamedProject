@@ -1,64 +1,10 @@
-# ================= FRONTEND (Next.js) ================= #
+  Typically you don’t ignore individual Python scripts unless you have a very specific reason. You probably **shouldn’t** ignore them — otherwise, your app source code won't be committed.
 
-# dependencies
-/frontend/node_modules
-/frontend/.pnp
-/frontend/.pnp.*
-/frontend/.yarn/*
-!/frontend/.yarn/patches
-!/frontend/.yarn/plugins
-!/frontend/.yarn/releases
-!/frontend/.yarn/versions
+---
 
-# testing
-/frontend/coverage
+### ✅ Recommended **cleaned-up version**
 
-# next.js
-/frontend/.next/
-/frontend/out/
-
-/frontend/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-/frontend/.vercel
-
-# typescript
-/frontend/*.tsbuildinfo
-/frontend/next-env.d.ts
-
-# env
-.env*
-
-
-# ================= BACKEND (Python) ================= #
-
-# Python cache
-/backend/__pycache__/
-/backend/*.pyc
-
-# Virtual environment
-/backend/venv311/
-
-# Jupyter
-*.ipynb_checkpoints
-
-# Data or output folders
-/backend/entity_sentiment_results/
-
-# Logs
-*.log
-
-# OS
-Thumbs.db
-
+```gitignore
 # ================= GLOBAL ROOT LEVEL ================= #
 
 # macOS
@@ -66,65 +12,94 @@ Thumbs.db
 # Windows
 Thumbs.db
 
-# Docker
-**/Dockerfile
-**/docker-compose.yml
-
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# Dependencies
-/node_modules
-/.pnp
+# Node.js / Frontend
+node_modules/
+.pnp/
 .pnp.js
-
-# Testing
-/coverage
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # Next.js
-/.next/
-/out/
+.next/
+out/
+build/
 
 # Production
-/build
+.vercel/
+.turbo/
 
-# Misc
-.DS_Store
-*.pem
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# Local Environment Variables
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Log files
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Environment Variables
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
-.vscode
-.idea
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.swp
 
-# Turbo
-.turbo
+# ================= BACKEND (Python) ================= #
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# Python
-**/__pycache__
+# Python cache
+__pycache__/
 *.pyc
-.venv
+*.pyo
+*.pyd
+
+# Virtual environments
 venv/
+.venv/
 env/
+venv311/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data or output folders
+backend/entity_sentiment_results/
+*.log
+
+# ================= FRONTEND (Next.js) ================= #
+
+frontend/node_modules/
+frontend/.pnp/
+frontend/.pnp.*
+frontend/.yarn/*
+!frontend/.yarn/patches
+!frontend/.yarn/plugins
+!frontend/.yarn/releases
+!frontend/.yarn/versions
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/coverage/
+frontend/.vercel/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# ================= OTHERS ================= #
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Public assets (optional — depending on whether generated)
+# public/
+
+# Misc
+*.pem

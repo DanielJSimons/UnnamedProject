@@ -1,4 +1,4 @@
-@import '@/styles/variables';
+@use '@/styles/variables' as *;
 
 .layout {
   min-height: 100vh;
@@ -18,9 +18,13 @@
   padding: $spacing-lg;
   overflow-y: auto;
   transition: padding-left $transition-normal;
+  background-color: $color-background;
 
-  &.withSidebar {
-    padding-left: calc(240px + #{$spacing-lg}); // Sidebar width + padding
+  &.withSidebarExpanded {
+    padding-left: calc(260px + #{$spacing-lg}); // Sidebar expanded width + padding
+  }
+  &.withSidebarCollapsed {
+    padding-left: calc(80px + #{$spacing-lg}); // Sidebar collapsed width + padding
   }
 }
 
@@ -29,8 +33,20 @@
   .content {
     padding: $spacing-md;
 
-    &.withSidebar {
+    &.withSidebarExpanded {
       padding-left: $spacing-md;
     }
+    &.withSidebarCollapsed {
+      padding-left: $spacing-md;
+    }
+  }
+}
+
+.dashboardTheme {
+  background-color: #1a1a2e; // Dark futuristic purple
+  color: #e0e0e0;
+
+  .content {
+    background-color: #1a1a2e; // Dark futuristic purple
   }
 } 

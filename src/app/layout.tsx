@@ -2,11 +2,20 @@ import React from 'react';
 import { Layout } from '@/components/Layout/Layout';
 import { AuthProvider } from '@/context/AuthContext';
 import './globals.css';
+import { Metadata } from 'next';
 
-export const metadata = {
-  title: 'Unnamed Project - Video News Analysis & Sentiment Tracking',
-  description: 'Analyze news video transcripts for entity mentions and sentiment. Track how key figures, organizations, and events are portrayed across thousands of news sources.',
-  keywords: 'video analysis, news analysis, sentiment analysis, entity recognition, media monitoring',
+export const metadata: Metadata = {
+  title: 'UnnamedProject',
+  description: 'Your AI-powered video analysis platform',
+  icons: {
+    icon: [
+      {
+        url: 'data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAAAAD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAA==',
+        sizes: '16x16',
+        type: 'image/x-icon',
+      }
+    ]
+  }
 };
 
 // Client-side wrapper component
@@ -32,7 +41,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ClientLayout>{children}</ClientLayout>
+        <AuthProvider>
+          <Layout>{children}</Layout>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
+@use '@/styles/variables' as *;
 @use 'sass:color';
-@import '@/styles/variables';
 
 .header {
   background-color: $color-background;

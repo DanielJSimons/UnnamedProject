@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { FiMail, FiLock, FiUser } from 'react-icons/fi';
@@ -56,20 +56,48 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { login, signup } = useAuth();
 
+  // Sync auto-filled browser values into form state
+  useEffect(() => {
+    const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
+    const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement;
+    setFormData(prev => ({
+      ...prev,
+      email: emailInput?.value || prev.email,
+      password: passwordInput?.value || prev.password,
+    }));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+    // Fallback to DOM autofill values if state is empty
+    let emailToSubmit = formData.email;
+    let passwordToSubmit = formData.password;
+    if (!emailToSubmit) {
+      const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
+      emailToSubmit = emailInput?.value ?? '';
+    }
+    if (!passwordToSubmit) {
+      const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement;
+      passwordToSubmit = passwordInput?.value ?? '';
+    }
 
     try {
       if (isLogin) {
-        await login(formData.email, formData.password);
+        await login(emailToSubmit, passwordToSubmit);
       } else {
         await signup(formData.name, formData.email, formData.password);
       }
       router.push('/dashboard');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Authentication failed';
+    } catch (err: any) {
+      let message = 'Authentication failed';
+      // Handle invalid credentials gracefully
+      if (err.response?.status === 401) {
+        message = isLogin ? 'Invalid email or password' : 'Unable to create account';
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
       setError(message);
     } finally {
       setIsLoading(false);
@@ -157,6 +185,15 @@ export default function AuthPage() {
                       onChange={handleInputChange}
                       required
                       disabled={isLoading}
+                      autoComplete={
+                        field.name === 'email'
+                          ? 'email'
+                          : field.name === 'password'
+                          ? isLogin
+                            ? 'current-password'
+                            : 'new-password'
+                          : 'name'
+                      }
                     />
                   </div>
                 ))}

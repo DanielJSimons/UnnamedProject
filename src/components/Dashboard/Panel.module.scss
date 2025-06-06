@@ -1,12 +1,11 @@
-@import '@/styles/variables';
+@use '@/styles/variables' as *;
 
 .panel {
-  background-color: rgba(30, 41, 59, 0.5);
-  border-radius: $radius-lg;
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
   padding: $spacing-lg;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  color: #E2E8F0;
+  height: 100%;
 
   h3 {
     margin-top: 0;

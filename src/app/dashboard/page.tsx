@@ -20,7 +20,7 @@ import {
 import styles from './page.module.scss';
 import { useAuth } from '@/context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label, Brush, ReferenceArea } from 'recharts';
-import { FaSyncAlt } from 'react-icons/fa';
+import { FaSyncAlt, FaPalette } from 'react-icons/fa';
 import { generateLineChartData } from '@/lib/mockData';
 import { SentimentDistributionPanel } from '@/components/Dashboard/SentimentDistributionPanel';
 import { VadAnalysisPanel } from '@/components/Dashboard/VadAnalysisPanel';
@@ -28,7 +28,7 @@ import { ContextualSnippetsPanel } from '@/components/Dashboard/ContextualSnippe
 import { WordCloudPanel } from '@/components/Dashboard/WordCloudPanel';
 import { NetworkGraphPanel } from '@/components/Dashboard/NetworkGraphPanel';
 import { HeatmapPanel } from '@/components/Dashboard/HeatmapPanel';
-import { SortablePanel } from '@/components/Dashboard/SortablePanel';
+import { SortablePanel, SortablePanelProps } from '@/components/Dashboard/SortablePanel';
 import { EntityManagementModal } from '@/components/Dashboard/EntityManagementModal';
 import { DateRangePicker } from '@/components/Inputs/DateRangePicker';
 import { DateRange } from 'react-day-picker';
@@ -38,7 +38,7 @@ type PanelType = {
   id: string;
   title: string;
   component: React.FC<any>;
-  gridProps?: { [key: string]: any };
+  span: number;
 };
 
 export default function Dashboard() {
@@ -50,19 +50,18 @@ export default function Dashboard() {
     from: addDays(new Date(), -30),
     to: new Date(),
   });
-
+  
   const entityColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#00C49F', '#FFBB28', '#FF8042'];
 
-  const initialPanels: PanelType[] = [
-    { id: 'sentiment', title: 'Sentiment Distribution', component: SentimentDistributionPanel },
-    { id: 'vad', title: 'VAD Emotional Snapshot', component: VadAnalysisPanel },
-    { id: 'wordcloud', title: 'Word Cloud Analysis', component: WordCloudPanel },
-    { id: 'network', title: 'Entity Network', component: NetworkGraphPanel },
-    { id: 'heatmap', title: 'Temporal Patterns', component: HeatmapPanel },
-    { id: 'snippets', title: 'Contextual Snippets', component: ContextualSnippetsPanel, gridProps: { 'data-grid': { w: 2, h: 1 } } },
-  ];
-  const [panels, setPanels] = useState(initialPanels);
-  
+  const [panels, setPanels] = useState<PanelType[]>([
+    { id: 'sentiment', title: 'Sentiment Distribution', component: SentimentDistributionPanel, span: 1 },
+    { id: 'vad', title: 'VAD Emotional Snapshot', component: VadAnalysisPanel, span: 1 },
+    { id: 'wordcloud', title: 'Word Cloud Analysis', component: WordCloudPanel, span: 1 },
+    { id: 'network', title: 'Entity Network', component: NetworkGraphPanel, span: 1 },
+    { id: 'heatmap', title: 'Temporal Patterns', component: HeatmapPanel, span: 1 },
+    { id: 'snippets', title: 'Contextual Snippets', component: ContextualSnippetsPanel, span: 1 },
+  ]);
+
   const [data, setData] = useState(() => generateLineChartData(selectedEntities.map(e => ({ entity: e, color: '#8884d8' })), secondaryMetric));
   const [zoomState, setZoomState] = useState({
     refAreaLeft: '',
@@ -160,6 +159,14 @@ export default function Dashboard() {
     return <panel.component {...props} />;
   };
 
+  const handlePanelResize = (panelId: string) => {
+    setPanels(prevPanels =>
+      prevPanels.map(p =>
+        p.id === panelId ? { ...p, span: p.span === 1 ? 3 : 1 } : { ...p, span: 1 }
+      )
+    );
+  };
+
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
@@ -203,18 +210,18 @@ export default function Dashboard() {
           >
             <defs>
               <linearGradient id="colorMain" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                <stop offset="5%" stopColor={entityColors[0]} stopOpacity={0.8}/>
+                <stop offset="95%" stopColor={entityColors[0]} stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="colorSecondary" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+                <stop offset="5%" stopColor={entityColors[1]} stopOpacity={0.8}/>
+                <stop offset="95%" stopColor={entityColors[1]} stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#4a4a6a" />
-            <XAxis dataKey="date" stroke="#a0a0c0" />
-            <YAxis yAxisId="left" stroke="#a0a0c0">
-              <Label value="Mention Count" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fill: '#a0a0c0' }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#333355" />
+            <XAxis dataKey="date" stroke="#8c8ca1" />
+            <YAxis yAxisId="left" stroke="#8c8ca1">
+              <Label value="Mention Count" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fill: '#8c8ca1' }} />
             </YAxis>
             {secondaryMetric !== 'none' && (
               <YAxis yAxisId="right" orientation="right" stroke="#82ca9d">
@@ -223,9 +230,10 @@ export default function Dashboard() {
             )}
             <Tooltip
               contentStyle={{
-                backgroundColor: 'rgba(20, 20, 30, 0.9)',
-                borderColor: 'rgba(100, 100, 120, 0.7)',
+                backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                borderColor: 'rgba(107, 114, 128, 0.7)',
                 borderRadius: '12px',
+                color: '#F9FAFB',
               }}
             />
             <Legend />
@@ -248,8 +256,8 @@ export default function Dashboard() {
                 dataKey={`${entity}_${secondaryMetric}`}
                 stroke={entityColors[index % entityColors.length]}
                 strokeWidth={2}
-                dot={false}
                 strokeDasharray="5 5"
+                dot={false}
               />
             ))}
             {zoomState.refAreaLeft && zoomState.refAreaRight ? (
@@ -262,9 +270,16 @@ export default function Dashboard() {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={panels.map(p => p.id)} strategy={rectSortingStrategy}>
-          <div className={styles.dashboardGrid}>
+          <div className={styles.panelsGrid}>
             {panels.map((panel) => (
-              <SortablePanel key={panel.id} id={panel.id} title={panel.title}>
+              <SortablePanel
+                key={panel.id}
+                id={panel.id}
+                title={panel.title}
+                isExpanded={panel.span > 1}
+                onToggleExpand={() => handlePanelResize(panel.id)}
+                style={{ gridColumn: `span ${panel.span}` }}
+              >
                 {getPanelComponent(panel)}
               </SortablePanel>
             ))}

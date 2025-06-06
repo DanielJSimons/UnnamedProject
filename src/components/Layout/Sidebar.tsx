@@ -1,6 +1,7 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { 
@@ -12,10 +13,21 @@ import {
   FaDollarSign,
   FaBookmark,
   FaBell,
-  FaHistory
+  FaHistory,
+  FaUser,
+  FaCog
 } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.scss';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose
+} from './Dialog';
 
 interface NavItem {
   href: string;
@@ -23,10 +35,22 @@ interface NavItem {
   label: string;
 }
 
-export const Sidebar: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(true);
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { user, logout } = useAuth();
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<'profile' | 'appSettings' | 'pricing' | 'signout'>('profile');
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Debug log
+  React.useEffect(() => {
+    console.log('Auth state:', { user, isAuthenticated: !!user });
+  }, [user]);
 
   const mainNavItems: NavItem[] = [
     {
@@ -61,19 +85,6 @@ export const Sidebar: React.FC = () => {
     }
   ];
 
-  const userNavItems: NavItem[] = [
-    {
-      href: '/settings',
-      icon: <FaUserCog className={styles.icon} />,
-      label: 'Settings'
-    },
-    {
-      href: '/pricing',
-      icon: <FaDollarSign className={styles.icon} />,
-      label: 'Pricing'
-    }
-  ];
-
   const renderNavItem = (item: NavItem) => {
     const isActive = pathname === item.href;
     return (
@@ -83,8 +94,99 @@ export const Sidebar: React.FC = () => {
         className={`${styles.navItem} ${isActive ? styles.active : ''}`}
       >
         {item.icon}
-        {isOpen && <span>{item.label}</span>}
+        <span>{item.label}</span>
       </Link>
+    );
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsAccountOpen(false);
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  const renderUserProfile = () => {
+    if (!user) return null;
+
+    return (
+      <div className={styles.userProfileSection}>
+        <Dialog open={isAccountOpen} onOpenChange={setIsAccountOpen}>
+          <DialogTrigger asChild>
+            <button className={styles.profileTrigger}>
+              <div className={styles.userInfo}>
+                <div className={styles.avatar}>
+                  <FaUser />
+                </div>
+                <div className={styles.userDetails}>
+                  <span className={styles.userName}>{user.name || 'User'}</span>
+                  <span className={styles.userEmail}>{user.email}</span>
+                </div>
+              </div>
+            </button>
+          </DialogTrigger>
+
+          <DialogContent
+            style={{
+              left: isOpen ? 'calc(50% + 130px)' : 'calc(50% + 40px)'
+            }}
+            className="w-[75vw] h-[75vh]"
+          >
+            <DialogHeader>
+              <DialogTitle>Account</DialogTitle>
+            </DialogHeader>
+            <div className={styles.accountModal}>
+              <nav className={styles.accountNav}>
+                <button
+                  className={selectedTab === 'profile' ? styles.activeTab : styles.tab}
+                  onClick={() => setSelectedTab('profile')}
+                >
+                  <FaUser className={styles.icon} />
+                  <span>Profile</span>
+                </button>
+                <button
+                  className={selectedTab === 'appSettings' ? styles.activeTab : styles.tab}
+                  onClick={() => setSelectedTab('appSettings')}
+                >
+                  <FaCog className={styles.icon} />
+                  <span>Application Settings</span>
+                </button>
+                <button
+                  className={selectedTab === 'pricing' ? styles.activeTab : styles.tab}
+                  onClick={() => setSelectedTab('pricing')}
+                >
+                  <FaDollarSign className={styles.icon} />
+                  <span>Pricing</span>
+                </button>
+                <button
+                  className={selectedTab === 'signout' ? styles.activeTab : styles.tab}
+                  onClick={handleLogout}
+                >
+                  <FaSignOutAlt className={styles.icon} />
+                  <span>Sign Out</span>
+                </button>
+              </nav>
+              <div className={styles.accountBody}>
+                {selectedTab === 'profile' && (
+                  <div>Profile content goes here</div>
+                )}
+                {selectedTab === 'appSettings' && (
+                  <div>Application settings content goes here</div>
+                )}
+                {selectedTab === 'pricing' && (
+                  <div>Pricing content goes here</div>
+                )}
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose className={styles.closeButton}>Close</DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     );
   };
 
@@ -99,13 +201,7 @@ export const Sidebar: React.FC = () => {
           {mainNavItems.map(renderNavItem)}
         </nav>
 
-        <div className={styles.userSection}>
-          {userNavItems.map(renderNavItem)}
-          <button onClick={logout} className={styles.navItem}>
-            <FaSignOutAlt className={styles.icon} />
-            {isOpen && <span>Sign Out</span>}
-          </button>
-        </div>
+        {renderUserProfile()}
 
         <Collapsible.Trigger asChild>
           <button className={styles.trigger}>

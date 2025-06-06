@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine, func, case
@@ -8,20 +8,69 @@ from config import DATABASE_URL, YOUTUBE_API_KEY, MAX_RESULTS_PER_CHANNEL
 from models import Base, Video, VideoStatistic, Thumbnail, Caption, EntitySentiment
 from youtube_service import YouTubeService
 import jwt
-import datetime
+from datetime import datetime, timedelta
 import uuid
 from functools import wraps
 from dateutil.parser import parse as parse_date
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app)
 
-# In a real app, this would be in a secure config file
+# Configure CORS at the application level
+CORS(app, 
+     resources={
+         r"/*": {  # Match all routes
+             "origins": ["http://localhost:3000", "http://localhost:3001"],
+             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+             "allow_headers": ["Content-Type", "Authorization"],
+             "supports_credentials": True,
+             "expose_headers": ["Content-Range", "X-Content-Range"]
+         }
+     },
+     supports_credentials=True
+)
+
+# Enable CORS pre-flight requests
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", request.headers.get("Origin", "*"))
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response
+
+# In a real app, these would be in a secure config file and use a proper database
 app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)  # Short-lived access token
+app.config['REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)     # Long-lived refresh token
 
 # In-memory storage (replace with a real database in production)
 users = {}
 refresh_tokens = {}
+blacklisted_tokens = set()
+
+def generate_tokens(user_data):
+    """Generate both access and refresh tokens for a user."""
+    # Generate access token
+    access_token = jwt.encode({
+        'email': user_data['email'],
+        'exp': datetime.utcnow() + app.config['ACCESS_TOKEN_EXPIRES']
+    }, app.config['SECRET_KEY'])
+
+    # Generate refresh token
+    refresh_token = str(uuid.uuid4())
+    refresh_tokens[user_data['email']] = {
+        'token': refresh_token,
+        'expires': datetime.utcnow() + app.config['REFRESH_TOKEN_EXPIRES']
+    }
+
+    return access_token, refresh_token
 
 def token_required(f):
     @wraps(f)
@@ -37,6 +86,9 @@ def token_required(f):
 
         if not token:
             return jsonify({'error': 'Token is missing'}), 401
+
+        if token in blacklisted_tokens:
+            return jsonify({'error': 'Token has been revoked'}), 401
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
@@ -79,60 +131,78 @@ def login():
 
     user = users.get(email)
     if user and check_password_hash(user['password'], password):
-        token = jwt.encode({
-            'email': email,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-        }, app.config['SECRET_KEY'])
-
-        refresh_token = str(uuid.uuid4())
-        refresh_tokens[email] = refresh_token
+        access_token, refresh_token = generate_tokens(user)
 
         return jsonify({
             "message": "Login successful",
-            "token": token,
+            "token": access_token,
+            "refreshToken": refresh_token,
             "userId": user['id'],
-            "name": user['name'],
-            "refreshToken": refresh_token
+            "name": user['name']
         }), 200
 
     return jsonify({"error": "Invalid credentials"}), 401
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
-    data = request.get_json() or {}
-    email = data.get('email')
-    password = data.get('password')
-    name = data.get('name')
+    try:
+        data = request.get_json()
+        logger.debug(f"Received signup request with data: {data}")
+        
+        if not data:
+            logger.error("No JSON data received in request")
+            return jsonify({"error": "No data provided"}), 400
 
-    if not email or not password or not name:
-        return jsonify({"error": "Missing required fields"}), 400
+        email = data.get('email')
+        password = data.get('password')
+        name = data.get('name')
 
-    if email in users:
-        return jsonify({"error": "Email already registered"}), 400
+        # Validate required fields
+        if not email:
+            logger.error("Email missing from signup request")
+            return jsonify({"error": "Email is required"}), 400
+        if not password:
+            logger.error("Password missing from signup request")
+            return jsonify({"error": "Password is required"}), 400
+        if not name:
+            logger.error("Name missing from signup request")
+            return jsonify({"error": "Name is required"}), 400
 
-    user_id = str(uuid.uuid4())
-    users[email] = {
-        'id': user_id,
-        'email': email,
-        'name': name,
-        'password': generate_password_hash(password)
-    }
+        # Check if user already exists
+        if email in users:
+            logger.warning(f"Signup attempt with existing email: {email}")
+            return jsonify({"error": "Email already registered"}), 400
 
-    token = jwt.encode({
-        'email': email,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-    }, app.config['SECRET_KEY'])
+        # Create new user
+        try:
+            user_id = str(uuid.uuid4())
+            users[email] = {
+                'id': user_id,
+                'email': email,
+                'name': name,
+                'password': generate_password_hash(password)
+            }
+            logger.debug(f"Created new user with email: {email}")
 
-    refresh_token = str(uuid.uuid4())
-    refresh_tokens[email] = refresh_token
+            # Generate tokens
+            access_token, refresh_token = generate_tokens(users[email])
+            logger.debug("Generated tokens for new user")
 
-    return jsonify({
-        "message": "User created successfully",
-        "token": token,
-        "userId": user_id,
-        "name": name,
-        "refreshToken": refresh_token
-    }), 201
+            return jsonify({
+                "message": "User created successfully",
+                "token": access_token,
+                "refreshToken": refresh_token,
+                "userId": user_id,
+                "name": name
+            }), 201
+
+        except Exception as e:
+            logger.error(f"Error creating user: {str(e)}")
+            return jsonify({"error": "Error creating user"}), 500
+
+    except Exception as e:
+        logger.error(f"Unexpected error in signup: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route('/api/verify-token', methods=['GET'])
 @token_required
@@ -146,32 +216,53 @@ def verify_token(current_user):
 @app.route('/api/refresh-token', methods=['POST'])
 def refresh_token():
     data = request.get_json() or {}
-    refresh_token = data.get('refreshToken')
+    old_refresh_token = data.get('refreshToken')
     email = data.get('email')
 
-    if not refresh_token or not email:
+    if not old_refresh_token or not email:
         return jsonify({"error": "Missing refresh token or email"}), 400
 
-    stored_token = refresh_tokens.get(email)
-    if not stored_token or stored_token != refresh_token:
+    stored = refresh_tokens.get(email)
+    if not stored or stored['token'] != old_refresh_token:
         return jsonify({"error": "Invalid refresh token"}), 401
+
+    if stored['expires'] < datetime.utcnow():
+        refresh_tokens.pop(email, None)
+        return jsonify({"error": "Refresh token has expired"}), 401
 
     user = users.get(email)
     if not user:
         return jsonify({"error": "User not found"}), 401
 
-    token = jwt.encode({
-        'email': email,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-    }, app.config['SECRET_KEY'])
-
-    new_refresh_token = str(uuid.uuid4())
-    refresh_tokens[email] = new_refresh_token
+    # Generate new tokens
+    access_token, new_refresh_token = generate_tokens(user)
 
     return jsonify({
-        "token": token,
+        "token": access_token,
         "refreshToken": new_refresh_token
     }), 200
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    data = request.get_json() or {}
+    refresh_token = data.get('refreshToken')
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header:
+        try:
+            access_token = auth_header.split(" ")[1]
+            blacklisted_tokens.add(access_token)
+        except IndexError:
+            pass
+
+    if refresh_token:
+        # Remove the refresh token
+        for email, token_data in refresh_tokens.items():
+            if token_data['token'] == refresh_token:
+                refresh_tokens.pop(email)
+                break
+
+    return jsonify({"message": "Logged out successfully"}), 200
 
 @app.route('/api/v1/channels/<channel_id>/videos', methods=['POST'])
 def fetch_channel_videos(channel_id):
