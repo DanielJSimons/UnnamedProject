@@ -206,7 +206,8 @@ class YouTubeService:
             video.description = snippet.get("description", "")
             video.channel_id = snippet.get("channelId")
             video.channel_title = snippet.get("channelTitle")
-            video.duration = parse_duration(content_details.get("duration", "PT0S"))
+            duration_td = parse_duration(content_details.get("duration", "PT0S"))
+            video.duration = int(duration_td.total_seconds())
             video.default_language = snippet.get("defaultAudioLanguage")
             video.category_id = int(snippet["categoryId"]) if snippet.get("categoryId") else None
             video.raw_snippet = snippet
